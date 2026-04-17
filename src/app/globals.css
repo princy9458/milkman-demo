@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f6f1e7;
+  --foreground: #1e1c16;
+  --surface: #fffdf8;
+  --surface-muted: #efe7d8;
+  --border: #dccfb8;
+  --primary: #315d3c;
+  --primary-strong: #244a2e;
+  --accent: #c97a2b;
+  --danger: #a94438;
+  --muted: #6c665d;
+  --ring: rgba(49, 93, 60, 0.24);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-strong: var(--primary-strong);
+  --color-accent: var(--accent);
+  --color-danger: var(--danger);
+  --color-muted: var(--muted);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: radial-gradient(circle at top, #fff8ee 0%, #f6f1e7 45%, #efe7d8 100%);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(201, 122, 43, 0.22);
+}
+
+.app-shell {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(201, 122, 43, 0.12), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(49, 93, 60, 0.14), transparent 26%);
+}
+
+.panel {
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 88%, white 12%);
+  box-shadow: 0 10px 30px rgba(50, 38, 24, 0.06);
+}
+
+.soft-ring {
+  box-shadow: 0 0 0 4px var(--ring);
+}

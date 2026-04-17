@@ -1,0 +1,15 @@
+{
+  "appName": "Milkman",
+  "tagline": "Milk delivery and billing management",
+  "admin": "Admin",
+  "customer": "Customer",
+  "dashboard": "Dashboard",
+  "customers": "Customers",
+  "deliveries": "Deliveries",
+  "billing": "Billing",
+  "reports": "Reports",
+  "todayOverview": "Today's overview",
+  "quickActions": "Quick actions",
+  "viewAll": "View all",
+  "login": "Login"
+}
