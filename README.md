@@ -14,7 +14,7 @@ The primary goal is to help a milk seller:
 - maintain account balances and payments
 - allow customers to view their own usage, bills, and status
 
-The interface should feel simple on mobile, fast for daily operations, and practical enough to be used like a lightweight admin panel or mobile web app.
+The interface should feel simple on mobile, fast for daily operations, and practical enough to be used like a lightweight admin panel or mobile web app. One
 
 ## Core User Roles
 
