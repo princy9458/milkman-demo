@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { CirclePlus, Eye, FilePenLine, Filter, Search, UserRound } from "lucide-react";
+import { CirclePlus, Filter, Search, UserRound } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AdminShell } from "@/components/layout/admin-shell";
 import { AdminBadge, AdminButton, AdminCard } from "@/components/layout/admin-ui";
+import { CustomerCardActions } from "@/components/customers/customer-card-actions";
 import { getCustomerListData } from "@/lib/data-service";
 import { formatCurrencyINR } from "@/lib/utils";
 
@@ -129,22 +130,10 @@ export default async function AdminCustomersPage({
                   {customer.notes ? t("notesAvailable") : t("noNote")}
                 </span>
               </div>
-              <div className="flex flex-col gap-2 sm:flex-row">
-                <Link
-                  href={`/${locale}/admin/customers/${customer.customerCode}`}
-                  className="admin-secondary-button px-4 py-3 text-sm font-semibold"
-                >
-                  <Eye className="h-4 w-4" />
-                  {tCommon("view")}
-                </Link>
-                <Link
-                  href={`/${locale}/admin/customers/${customer.customerCode}/edit`}
-                  className="admin-outline-button px-4 py-3 text-sm font-semibold"
-                >
-                  <FilePenLine className="h-4 w-4" />
-                  {tCommon("edit")}
-                </Link>
-              </div>
+              <CustomerCardActions
+                customerCode={customer.customerCode}
+                locale={locale}
+              />
             </div>
           </article>
         ))}
