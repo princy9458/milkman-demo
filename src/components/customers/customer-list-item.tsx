@@ -1,28 +1,34 @@
 "use client";
 
 import { useState } from "react";
-import { Minus, Plus, UserRound } from "lucide-react";
-import { AdminBadge } from "@/components/layout/admin-ui";
+import { CalendarDays, Minus, Plus, UserRound } from "lucide-react";
+import { AdminBadge, AdminDivider } from "@/components/layout/admin-ui";
 import { cn, formatCurrencyINR } from "@/lib/utils";
 import { CustomerCardActions } from "./customer-card-actions";
+import { CustomerDetailModal } from "./customer-detail-modal";
+import { CustomerSchedulePopover } from "./customer-schedule-popover";
 
 type CustomerListItemProps = {
   customer: {
     id: string;
     customerCode: string;
     name: string;
+    phone: string;
     quantity: number;
     quantityLabel: string;
     due: number;
+    rate: number;
     address: string;
     areaName: string;
+    areaCode: string;
     status: "ACTIVE" | "PAUSED" | "INACTIVE";
     lastPaymentDate?: Date | string | null;
     deliveryInstruction?: string;
+    notes?: string;
   };
   locale: string;
   tDue: string;
-  onView?: (mode: "view" | "details") => void;
+  onView?: (mode: "view" | "details" | "schedule") => void;
   isMenuOpen: boolean;
   setMenuOpen: (isOpen: boolean) => void;
 };
@@ -35,6 +41,9 @@ export function CustomerListItem({
   isMenuOpen,
   setMenuOpen
 }: CustomerListItemProps) {
+  const [isScheduleOpen, setIsScheduleOpen] = useState(false);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+
   const formatDateShort = (date: Date | string | null | undefined) => {
     if (!date) return "N/A";
     return new Intl.DateTimeFormat("en-IN", {
@@ -47,7 +56,7 @@ export function CustomerListItem({
     <article 
       className={cn(
         "admin-panel rounded-[22px] px-4 py-4 transition relative group",
-        isMenuOpen ? "z-[60]" : "z-10",
+        (isMenuOpen || isPopoverOpen) ? "z-[60]" : "z-10",
         "hover:bg-white active:scale-[0.995]"
       )}
     >
@@ -81,8 +90,8 @@ export function CustomerListItem({
         <div className="flex-1 hidden sm:block" />
 
         {/* 3. Due & Actions Section (Right) */}
-        <div className="flex items-center justify-between sm:justify-end gap-6 pointer-events-auto sm:min-w-[200px]">
-          <div className="text-right">
+        <div className="flex items-center justify-between sm:justify-end gap-3 pointer-events-auto sm:min-w-[200px]">
+          <div className="text-right mr-3">
             <p
               className={cn(
                 "text-[15px] font-black tracking-tight",
@@ -97,16 +106,47 @@ export function CustomerListItem({
             </p>
           </div>
 
-          <CustomerCardActions 
-            id={customer.id}
-            customerCode={customer.customerCode} 
-            locale={locale} 
-            onView={onView}
-            isMenuOpen={isMenuOpen}
-            setMenuOpen={setMenuOpen}
-          />
+          <div className="flex items-center gap-1.5">
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setIsPopoverOpen(!isPopoverOpen)}
+                className={cn(
+                  "flex h-10 w-10 items-center justify-center rounded-xl transition-all active:scale-90",
+                  isPopoverOpen ? "bg-blue-100 text-blue-600 shadow-inner" : "bg-gray-50 text-gray-400 hover:bg-blue-50 hover:text-blue-500"
+                )}
+                title="Delivery Schedule"
+              >
+                <CalendarDays className="h-5 w-5" />
+              </button>
+
+              <CustomerSchedulePopover 
+                isOpen={isPopoverOpen}
+                onClose={() => setIsPopoverOpen(false)}
+                customerCode={customer.customerCode}
+                onViewFull={() => setIsScheduleOpen(true)}
+              />
+            </div>
+
+            <CustomerCardActions 
+              id={customer.id}
+              customerCode={customer.customerCode}
+              isMenuOpen={isMenuOpen}
+              setMenuOpen={setMenuOpen}
+              locale={locale}
+              onView={onView}
+            />
+          </div>
         </div>
       </div>
+
+      <CustomerDetailModal
+        isOpen={isScheduleOpen}
+        onClose={() => setIsScheduleOpen(false)}
+        customer={customer}
+        locale={locale}
+        mode="schedule"
+      />
     </article>
   );
 }

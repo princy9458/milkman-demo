@@ -216,54 +216,54 @@
       "products": "उत्पाद"
     },
     "dashboard": {
-      "title": "एडमिन डैशबोर्ड",
-      "subtitle": "आज की डिलीवरी, ग्राहक स्थिति, बकाया और परचेज साइकिल पर त्वरित नज़र।",
+      "title": "मेरा डैशबोर्ड",
+      "subtitle": "आज के डिलीवरी, पेमेंट और दूध का हिसाब यहीं से मैनेज करें।",
       "stats": {
-        "activeCustomers": "सक्रिय ग्राहक",
-        "activeCustomersHint": "{count} ग्राहकों को अभी आज की स्थिति अपडेट चाहिए",
+        "activeCustomers": "कुल ग्राहक",
+        "activeCustomersHint": "{count} ग्राहकों की एंट्री अभी बाकी है",
         "todaysDeliveries": "आज की डिलीवरी",
         "todaysDeliveriesHint": "{count} घर अभी बाकी हैं",
-        "monthlySales": "मासिक बिक्री",
-        "monthlySalesHint": "पहुंचाए गए दूध और ऐड-ऑन उत्पादों से बना",
-        "outstandingDues": "बकाया राशि",
-        "outstandingDuesHint": "{count} खातों पर फ़ॉलो-अप चाहिए"
+        "monthlySales": "महीने की सेल",
+        "monthlySalesHint": "दूध और बाकी सामान का कुल हिसाब",
+        "outstandingDues": "बाकी पैसे (Dues)",
+        "outstandingDuesHint": "{count} लोगों से पैसे लेना बाकी है"
       },
       "hero": {
-        "badge": "सुबह का दूध चक्र",
-        "title": "डिलीवरी, बकाया और दूध परचेज ऑपरेशन एक कॉम्पैक्ट कंट्रोल रूम से।",
-        "description": "यह डैशबोर्ड अब लाइव MongoDB रिकॉर्ड्स से पढ़ता है, इसलिए डिलीवरी स्थिति, अतिरिक्त दूध, ऐड-ऑन उत्पाद, भुगतान और इनवर्ड परचेज गतिविधि एक जगह संरेखित रहती है।",
-        "startRun": "सुबह का रन शुरू करें",
-        "reviewLedger": "परचेज लेजर देखें"
+        "badge": "सुबह की डिलीवरी",
+        "title": "आज का दूध देना, पैसे लेना और रिकॉर्ड सब एक जगह।",
+        "description": "आज के डिलीवरी, पेमेंट और दूध का हिसाब यहीं से मैनेज करें।",
+        "startRun": "डिलीवरी शुरू करें",
+        "reviewLedger": "दूध खरीद का हिसाब"
       },
       "routeCustomers": "{count} ग्राहक",
-      "routeSummary": "{delivered} पहुंचाए • {liters} ली",
+      "routeSummary": "{delivered} को दिया • {liters} ली",
       "quickActions": {
-        "title": "त्वरित कार्य",
-        "subtitle": "ग्राहक डिलीवरी और आपूर्ति चक्र के लिए थंब-फ्रेंडली कार्य",
-        "addCustomer": "ग्राहक जोड़ें",
-        "markDeliveries": "डिलीवरी चिह्नित करें",
-        "recordPayment": "भुगतान दर्ज करें",
-        "capturePurchase": "परचेज दर्ज करें"
+        "title": "ज़रुरी काम",
+        "subtitle": "यहाँ से जल्दी एंट्री करें",
+        "addCustomer": "नया ग्राहक जोड़ें",
+        "markDeliveries": "डिलीवरी शुरू करें",
+        "recordPayment": "पेमेंट जमा करें",
+        "capturePurchase": "दूध खरीद एंट्री करें"
       },
       "progress": {
-        "title": "प्रगति",
-        "subtitle": "ग्राहक, बिलिंग और परचेज रिकॉर्ड्स से लाइव पूर्णता",
-        "deliveryCompletion": "डिलीवरी पूर्णता",
-        "paymentRecovery": "भुगतान वसूली",
-        "milkInwardCoverage": "दूध इनवर्ड कवरेज"
+        "title": "आज की प्रगति",
+        "subtitle": "कितना काम हो गया",
+        "deliveryCompletion": "डिलीवरी कितनी हुई",
+        "paymentRecovery": "कितने पैसे आये",
+        "milkInwardCoverage": "दूध कितना आया"
       },
       "attention": {
-        "title": "डिलीवरी ध्यान बिंदु",
-        "subtitle": "ऐसे ग्राहक जिन्हें आज की डिलीवरी या बिलिंग के आधार पर मैन्युअल फ़ॉलो-अप चाहिए"
+        "title": "इन ग्राहकों पर ध्यान दें",
+        "subtitle": "जिनका पेमेंट बाकी है या डिलीवरी में कोई सवाल है"
       },
       "performance": {
-        "title": "दैनिक प्रदर्शन",
-        "subtitle": "रूट, बकाया और परचेज-हेल्थ मेट्रिक्स का त्वरित स्नैपशॉट",
-        "viewSummary": "पूरा सारांश देखें",
-        "pending": "लंबित",
-        "delivered": "पहुंचाए",
-        "unpaidPurchases": "बकाया परचेज",
-        "milkInward": "दूध इनवर्ड"
+        "title": "आज का काम",
+        "subtitle": "अभी तक की रिपोर्ट",
+        "viewSummary": "पूरी रिपोर्ट",
+        "pending": "बाकी",
+        "delivered": "दिया गया",
+        "unpaidPurchases": "खरीद बाकी",
+        "milkInward": "दूध आया"
       }
     },
     "customers": {

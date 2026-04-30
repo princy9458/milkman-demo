@@ -178,8 +178,16 @@ export function MonthGrid({
                         </div>
                       )}
                     </div>
-                    <p className="text-xl font-black tracking-tight">
-                      {day.liters.toFixed(1)}<span className="ml-0.5 text-xs font-bold opacity-60">L</span>
+                    <p className={cn(
+                      "tracking-tight transition-all",
+                      (isToday || (day.skippedCount || 0) > 0 || (day.pausedCount || 0) > 0)
+                        ? "text-lg font-black text-[var(--admin-text)]" 
+                        : "text-[13px] font-medium text-[var(--admin-text)]/70"
+                    )}>
+                      {day.liters.toFixed(1)}<span className={cn(
+                        "ml-0.5 opacity-60",
+                        (isToday || (day.skippedCount || 0) > 0 || (day.pausedCount || 0) > 0) ? "text-xs font-bold" : "text-[10px] font-medium"
+                      )}>L</span>
                     </p>
                   </>
                 ) : (
