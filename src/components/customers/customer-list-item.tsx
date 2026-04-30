@@ -18,6 +18,7 @@ type CustomerListItemProps = {
     areaName: string;
     status: "ACTIVE" | "PAUSED" | "INACTIVE";
     lastPaymentDate?: Date | string | null;
+    deliveryInstruction?: string;
   };
   locale: string;
   tDue: string;

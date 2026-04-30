@@ -38,6 +38,7 @@ type PlainCustomerProfile = {
   areaName: string;
   landmark?: string;
   notes?: string;
+  deliveryInstruction?: string;
   isActive?: boolean;
 };
 
@@ -395,6 +396,7 @@ export async function getCustomerListData() {
         billed: entry.totals.totalAmount,
         paid: entry.totals.paidAmount,
         notes: entry.profile.notes || "",
+        deliveryInstruction: entry.profile.deliveryInstruction || "",
         deliverySlot: "Morning",
         deliveryStatus,
         extraQuantity: delivery?.extraQuantity || 0,
@@ -571,7 +573,7 @@ export async function getDeliveryRunData(options?: {
       customerName: entry.user?.name || entry.profile.customerCode,
       quantityLabel: `${planQuantity.toFixed(1)} ${entry.activePlan?.unitLabel || "L"}`,
       status,
-      note: delivery?.note || entry.profile.notes || "",
+      deliveryInstruction: entry.profile.deliveryInstruction || "",
       route: entry.profile.areaName,
       areaCode: entry.profile.areaCode,
       dueAmount: entry.totals.dueAmount,

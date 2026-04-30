@@ -25,6 +25,7 @@ type CustomerFormProps = {
     areaCode: string;
     landmark: string;
     internalNote: string;
+    deliveryInstruction: string;
     quantityLiters: number;
     pricePerLiter: number;
     unitLabel: string;
@@ -51,6 +52,7 @@ export function CustomerForm({
       areaCode: initialValues?.areaCode || areas[0]?.code || "",
       landmark: initialValues?.landmark || "",
       internalNote: initialValues?.internalNote || "",
+      deliveryInstruction: initialValues?.deliveryInstruction || "",
       quantityLiters: String(initialValues?.quantityLiters ?? 2),
       pricePerLiter: String(initialValues?.pricePerLiter ?? 62),
       unitLabel: initialValues?.unitLabel || "L",
@@ -248,6 +250,16 @@ export function CustomerForm({
             </AdminSelect>
           </AdminField>
         </div>
+
+        <AdminField label="Delivery Instruction (optional)">
+          <AdminInput
+            value={form.deliveryInstruction}
+            onChange={(event) =>
+              setForm((current) => ({ ...current, deliveryInstruction: event.target.value }))
+            }
+            placeholder="e.g. Ring once and leave at the door"
+          />
+        </AdminField>
 
         <AdminField label="Internal note">
           <AdminTextarea

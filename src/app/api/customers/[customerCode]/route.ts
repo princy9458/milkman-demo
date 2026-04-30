@@ -17,6 +17,8 @@ const customerSchema = z.object({
   areaCode: z.string().trim().min(1),
   landmark: z.string().trim().optional(),
   notes: z.string().trim().optional(),
+  deliveryInstruction: z.string().trim().optional(),
+
   quantityLiters: z.number().positive(),
   pricePerLiter: z.number().nonnegative(),
   unitLabel: z.string().trim().optional(),
@@ -82,6 +84,8 @@ export async function PUT(request: Request, context: RouteContext) {
     profile.area = area.name;
     profile.landmark = payload.landmark || "";
     profile.notes = payload.notes || "";
+    profile.deliveryInstruction = payload.deliveryInstruction || "";
+
     profile.isActive = payload.status !== "INACTIVE";
     await profile.save();
 
