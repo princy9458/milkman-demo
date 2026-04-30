@@ -24,13 +24,12 @@ const customerSchema = z.object({
   status: z.enum(["ACTIVE", "INACTIVE", "PAUSED"]).optional(),
 });
 
-type RouteContext = {
-  params: Promise<{ customerCode: string }>;
-};
-
-export async function GET(_: Request, context: RouteContext) {
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ customerCode: string }> }
+) {
   await connectToDatabase();
-  const { customerCode } = await context.params;
+  const { customerCode } = await params;
   const profile: any = await CustomerProfile.findOne({ customerCode }).lean();
 
   if (!profile) {
@@ -54,10 +53,13 @@ export async function GET(_: Request, context: RouteContext) {
   });
 }
 
-export async function PUT(request: Request, context: RouteContext) {
+export async function PUT(
+  request: Request,
+  { params }: { params: Promise<{ customerCode: string }> }
+) {
   try {
     await connectToDatabase();
-    const { customerCode } = await context.params;
+    const { customerCode } = await params;
     const payload = customerSchema.parse(await request.json());
     const profile = await CustomerProfile.findOne({ customerCode });
 
@@ -119,7 +121,7 @@ export async function PUT(request: Request, context: RouteContext) {
   } catch (error) {
     console.error("PUT Error:", error);
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: error.errors[0].message }, { status: 400 });
+      return NextResponse.json({ error: error.issues[0]?.message }, { status: 400 });
     }
     return NextResponse.json({ error: "Failed to update customer" }, { status: 500 });
   }

@@ -32,6 +32,7 @@ type CustomerFormProps = {
     status: "ACTIVE" | "PAUSED" | "INACTIVE";
   };
   areas: Array<{ code: string; name: string }>;
+  onSuccess?: () => void;
 };
 
 export function CustomerForm({
@@ -40,6 +41,7 @@ export function CustomerForm({
   customerCode,
   initialValues,
   areas,
+  onSuccess,
 }: CustomerFormProps) {
   const router = useRouter();
   const defaults = useMemo(
@@ -103,11 +105,15 @@ export function CustomerForm({
         throw new Error(data.error || "Unable to save customer");
       }
 
-      router.push(
-        mode === "create"
-          ? `/${locale}/admin/customers`
-          : `/${locale}/admin/customers/${customerCode}`,
-      );
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        router.push(
+          mode === "create"
+            ? `/${locale}/admin/customers`
+            : `/${locale}/admin/customers/${customerCode}`,
+        );
+      }
       router.refresh();
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Unable to save customer");
