@@ -10,18 +10,19 @@ import { CustomerDetailModal } from "./customer-detail-modal";
 
 type CustomerListProps = {
   customers: any[];
+  areas: any[];
   locale: string;
 };
 
-export function CustomerList({ customers, locale }: CustomerListProps) {
+export function CustomerList({ customers, areas, locale }: CustomerListProps) {
   const t = useTranslations("admin.customers");
   const tCommon = useTranslations("common");
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
-  const [modalMode, setModalMode] = useState<'view' | 'details'>('view');
+  const [modalMode, setModalMode] = useState<'view' | 'details' | 'edit' | 'schedule'>('view');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
-  const handleViewCustomer = (customer: any, mode: 'view' | 'details' = 'view') => {
+  const handleViewCustomer = (customer: any, mode: any = 'view') => {
     setSelectedCustomer(customer);
     setModalMode(mode);
     setIsModalOpen(true);
@@ -75,6 +76,7 @@ export function CustomerList({ customers, locale }: CustomerListProps) {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         customer={selectedCustomer}
+        areas={areas}
         locale={locale}
         mode={modalMode}
       />

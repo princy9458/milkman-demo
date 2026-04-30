@@ -87,9 +87,9 @@
   },
   "status": {
     "active": "Active",
-    "paused": "Paused",
-    "delivered": "Delivered",
-    "skipped": "Skipped",
+    "delivered": "D",
+    "skipped": "S",
+    "paused": "P",
     "pending": "Pending",
     "today": "Today",
     "duePending": "Due pending",
@@ -120,15 +120,15 @@
     "monthlyLiters": "Monthly liters",
     "routeSummary": "{area} route summary",
     "deliveredDays": "Delivered days",
-    "skippedPaused": "{skipped} skipped · {paused} paused",
+    "skippedPaused": "{skipped} S · {paused} P",
     "estimatedBill": "Estimated bill",
     "estimateHint": "Projected from delivered consumption and add-ons",
     "headline": "Consumption calendar",
     "headlineHint": "Daily entries for your milk plan in {month}.",
     "legend": {
       "delivered": "Delivered",
-      "paused": "Paused",
-      "skipped": "Skipped"
+      "paused": "Pause",
+      "skipped": "Skip"
     },
     "avgPerDay": "Average per active day",
     "pausedDays": "Paused days",
@@ -217,50 +217,50 @@
       "areaInsights": "Area Insights"
     },
     "dashboard": {
-      "title": "Admin Dashboard",
-      "subtitle": "A quick view of today's deliveries, customer status, outstanding dues, and purchase cycle.",
+      "title": "My Dashboard",
+      "subtitle": "Manage your deliveries, payments, and milk records here.",
       "stats": {
-        "activeCustomers": "Active customers",
-        "activeCustomersHint": "{count} customers still need today's status update",
-        "todaysDeliveries": "Today's deliveries",
-        "todaysDeliveriesHint": "{count} households still pending",
-        "monthlySales": "Monthly sales",
-        "monthlySalesHint": "Built from delivered milk and add-on products",
-        "outstandingDues": "Outstanding dues",
-        "outstandingDuesHint": "{count} accounts need follow-up"
+        "activeCustomers": "Total Customers",
+        "activeCustomersHint": "{count} entries still pending",
+        "todaysDeliveries": "Today's Deliveries",
+        "todaysDeliveriesHint": "{count} houses still pending",
+        "monthlySales": "Monthly Sales",
+        "monthlySalesHint": "Total bill from milk and other items",
+        "outstandingDues": "Pending Dues",
+        "outstandingDuesHint": "{count} payments still pending"
       },
       "hero": {
         "badge": "Morning milk cycle",
-        "title": "Deliveries, dues, and milk purchase operations from one compact control room.",
-        "description": "This dashboard now reads from live MongoDB records, so delivery status, extra milk, add-on products, payments, and inward purchase activity stay aligned in one place.",
-        "startRun": "Start morning run",
-        "reviewLedger": "Review purchase ledger"
+        "title": "Manage today’s milk delivery, payments, and purchases easily.",
+        "description": "Track daily deliveries, collect payments, and manage milk buying in one place. Everything you need for your daily work is here.",
+        "startRun": "Start delivery",
+        "reviewLedger": "Check milk purchase"
       },
       "routeCustomers": "{count} customers",
       "routeSummary": "{delivered} delivered • {liters} L",
       "quickActions": {
-        "title": "Quick actions",
-        "subtitle": "Thumb-friendly actions for customer delivery and supply cycle",
-        "addCustomer": "Add customer",
-        "markDeliveries": "Mark deliveries",
+        "title": "Quick Actions",
+        "subtitle": "Make quick entries here",
+        "addCustomer": "Add new customer",
+        "markDeliveries": "Start delivery",
         "recordPayment": "Record payment",
-        "capturePurchase": "Capture purchase"
+        "capturePurchase": "Record milk purchase"
       },
       "progress": {
-        "title": "Progress",
-        "subtitle": "Live completion from customer, billing, and purchase records",
+        "title": "Today's Progress",
+        "subtitle": "Work completed so far",
         "deliveryCompletion": "Delivery completion",
         "paymentRecovery": "Payment recovery",
-        "milkInwardCoverage": "Milk inward coverage"
+        "milkInwardCoverage": "Milk inward"
       },
       "attention": {
-        "title": "Delivery attention points",
-        "subtitle": "Customers needing a manual follow-up based on today's delivery or billing"
+        "title": "Customers needing attention",
+        "subtitle": "With pending payments or delivery issues"
       },
       "performance": {
-        "title": "Daily performance",
-        "subtitle": "Quick snapshot of route, dues, and purchase-health metrics",
-        "viewSummary": "View full summary",
+        "title": "Today's Work",
+        "subtitle": "Summary report",
+        "viewSummary": "Full report",
         "pending": "Pending",
         "delivered": "Delivered",
         "unpaidPurchases": "Unpaid purchases",
@@ -377,11 +377,11 @@
       "title": "Today's Deliveries",
       "subtitle": "One-tap actions for delivery marking, extra milk overrides, and add-on products.",
       "stats": {
-        "delivered": "Delivered",
+        "delivered": "D",
         "deliveredHint": "Saved directly from today's delivery records",
         "pending": "Pending",
         "pendingHint": "Needs doorstep confirmation or status update",
-        "pausedSkipped": "Paused/Skipped",
+        "pausedSkipped": "P/S",
         "pausedSkippedHint": "Temporary plan changes or no-delivery entries"
       },
       "note": "Super admin can mark delivered customers, save one-time extra milk, and attach ad hoc products like ghee or lassi for the same date without breaking monthly analytics.",
@@ -398,9 +398,9 @@
       "overrideSubtitle": "Save extra milk and ad hoc product items for one customer today.",
       "customer": "Customer",
       "statusLabel": "Status",
-      "statusDelivered": "Delivered",
-      "statusSkipped": "Skipped",
-      "statusPaused": "Paused",
+      "statusDelivered": "D",
+      "statusSkipped": "S",
+      "statusPaused": "P",
       "extraMilk": "Extra milk (L)",
       "finalQuantity": "Final quantity (L)",
       "addOnProduct": "Add-on product",

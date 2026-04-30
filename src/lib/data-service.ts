@@ -663,7 +663,10 @@ export async function getAreaAnalyticsData() {
 
 export async function getAreasData() {
   const base = await getBaseData();
-  return base.areas;
+  return base.areas.map((area) => ({
+    ...area,
+    _id: String(area._id),
+  }));
 }
 
 export async function getAdminCalendarData(filters?: {

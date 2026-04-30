@@ -191,9 +191,11 @@ export function DeliveryOperationsPanel({
         if (entry.customerCode !== customerCode) return entry;
 
         if (type === "RESET") {
-          return { ...entry, status: "PENDING", extraQuantity: 0 };
+          return { ...entry, status: "PENDING" as const, extraQuantity: 0 };
         }
-        return { ...entry, status: isTogglingOff ? "PENDING" : type };
+
+        const statusToSet = isTogglingOff ? "PENDING" : (type === "EXTRA" ? "DELIVERED" : type);
+        return { ...entry, status: statusToSet as any };
       })
     );
 
@@ -326,41 +328,49 @@ export function DeliveryOperationsPanel({
         </AdminField>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="flex items-center justify-between bg-emerald-50/50 border border-emerald-100 rounded-[22px] px-4 py-4">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Delivered</p>
-            <p className="mt-1 text-2xl font-black text-emerald-700">{counts.delivered}</p>
-          </div>
-          <div className="h-10 w-10 flex items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
-            <Check className="h-5 w-5 stroke-[3]" />
-          </div>
-        </div>
-        <div className="flex items-center justify-between bg-rose-50/50 border border-rose-100 rounded-[22px] px-4 py-4">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-rose-600">Skipped</p>
-            <p className="mt-1 text-2xl font-black text-rose-700">{counts.skipped}</p>
-          </div>
-          <div className="h-10 w-10 flex items-center justify-center rounded-full bg-rose-100 text-rose-600">
-            <X className="h-5 w-5 stroke-[3]" />
+      <div className="grid gap-3 sm:grid-cols-4">
+        <div className="bg-emerald-50/50 border border-emerald-100 rounded-[22px] px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600">D</p>
+              <p className="mt-1 text-2xl font-black text-emerald-700">{counts.delivered}</p>
+            </div>
+            <div className="h-9 w-9 flex items-center justify-center rounded-xl bg-emerald-100/50 text-emerald-600">
+              <Check className="h-5 w-5 stroke-[3]" />
+            </div>
           </div>
         </div>
-        <div className="flex items-center justify-between bg-amber-50/50 border border-amber-100 rounded-[22px] px-4 py-4">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-amber-600">Paused</p>
-            <p className="mt-1 text-2xl font-black text-amber-700">{counts.paused}</p>
-          </div>
-          <div className="h-10 w-10 flex items-center justify-center rounded-full bg-amber-100 text-amber-600">
-            <Pause className="h-5 w-5 stroke-[3]" />
+        <div className="bg-rose-50/50 border border-rose-100 rounded-[22px] px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-rose-600">S</p>
+              <p className="mt-1 text-2xl font-black text-rose-700">{counts.skipped}</p>
+            </div>
+            <div className="h-9 w-9 flex items-center justify-center rounded-xl bg-rose-100/50 text-rose-600">
+              <X className="h-5 w-5 stroke-[3]" />
+            </div>
           </div>
         </div>
-        <div className="flex items-center justify-between bg-blue-50/50 border border-blue-100 rounded-[22px] px-4 py-4">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-blue-600">Pending</p>
-            <p className="mt-1 text-2xl font-black text-blue-700">{counts.pending}</p>
+        <div className="bg-amber-50/50 border border-amber-100 rounded-[22px] px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-amber-600">P</p>
+              <p className="mt-1 text-2xl font-black text-amber-700">{counts.paused}</p>
+            </div>
+            <div className="h-9 w-9 flex items-center justify-center rounded-xl bg-amber-100/50 text-amber-600">
+              <Pause className="h-5 w-5 stroke-[3]" />
+            </div>
           </div>
-          <div className="h-10 w-10 flex items-center justify-center rounded-full bg-blue-100 text-blue-600">
-            <Clock className="h-5 w-5 stroke-[3]" />
+        </div>
+        <div className="bg-blue-50/50 border border-blue-100 rounded-[22px] px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-blue-600">Pending</p>
+              <p className="mt-1 text-2xl font-black text-blue-700">{counts.pending}</p>
+            </div>
+            <div className="h-9 w-9 flex items-center justify-center rounded-xl bg-blue-100/50 text-blue-600">
+              <Clock className="h-5 w-5 stroke-[3]" />
+            </div>
           </div>
         </div>
       </div>
@@ -414,7 +424,7 @@ export function DeliveryOperationsPanel({
                     </h2>
                   </div>
                   <AdminBadge tone={getStatusTone(task.status)} className="text-[10px] font-black uppercase h-5 px-2">
-                    {task.status}
+                    {task.status === "DELIVERED" ? "D" : task.status === "SKIPPED" ? "S" : task.status === "PAUSED" ? "P" : task.status}
                   </AdminBadge>
                 </div>
 
