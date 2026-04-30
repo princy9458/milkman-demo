@@ -36,6 +36,7 @@ type CustomerDetailModalProps = {
     rate: number;
     due: number;
     notes?: string;
+    deliveryInstruction?: string;
   } | null;
   locale: string;
   mode?: "view" | "details";
@@ -109,6 +110,18 @@ export function CustomerDetailModal({
               <span className="text-xs font-semibold uppercase tracking-wider">Address</span>
             </div>
             <p className="mt-2 text-sm leading-6 text-[var(--admin-text)]">{customer.address}</p>
+          </div>
+        )}
+
+        {customer.deliveryInstruction && (
+          <div className="rounded-[24px] bg-blue-50 border border-blue-100 p-4">
+            <div className="flex items-center gap-2 text-blue-600">
+              <Building2 className="h-4 w-4" />
+              <span className="text-xs font-bold uppercase tracking-wider">Delivery Instruction</span>
+            </div>
+            <p className="mt-2 text-sm font-bold text-blue-900 leading-relaxed">
+              "{customer.deliveryInstruction}"
+            </p>
           </div>
         )}
 

@@ -220,14 +220,6 @@ export function AdminShell({
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Link
-                    href={`/${locale}/admin/deliveries`}
-                    className="admin-primary-button px-4 py-2.5 text-sm font-semibold"
-                  >
-                    <Plus className="h-4 w-4" />
-                    <span className="hidden sm:inline">{tShell("quickMark")}</span>
-                    <span className="sm:hidden">{tShell("quickMarkShort")}</span>
-                  </Link>
                   <button
                     type="button"
                     className="admin-icon-button h-11 w-11"
