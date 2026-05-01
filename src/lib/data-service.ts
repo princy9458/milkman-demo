@@ -379,6 +379,32 @@ export async function getCustomerListData() {
       const delivery = deliveryMap.get(customerId);
       const deliveryStatus = delivery?.status || null;
 
+      const monthDayCount = daysInMonth(base.referenceDate);
+      const leadingBlankSlots = new Date(
+        base.referenceDate.getFullYear(),
+        base.referenceDate.getMonth(),
+        1,
+      ).getDay();
+
+      const days = Array.from({ length: monthDayCount }, (_, index) => {
+        const day = index + 1;
+        const date = new Date(base.referenceDate.getFullYear(), base.referenceDate.getMonth(), day);
+        const exception = entry.monthExceptions.find(
+          (ex) => toDate(ex.date)?.toDateString() === date.toDateString(),
+        ) || null;
+        const liters = exception ? 0 : entry.activePlan?.quantityLiters ?? 0;
+
+        return {
+          dateKey: `${monthKey(base.referenceDate)}-${String(day).padStart(2, "0")}`,
+          dateLabel: formatDateLabel(date),
+          dayOfMonth: day,
+          weekdayLabel: new Intl.DateTimeFormat("en-IN", { weekday: "short" }).format(date),
+          liters,
+          status: (exception?.type === "PAUSE" ? "PAUSED" : exception?.type === "SKIP" ? "SKIPPED" : "DELIVERED") as CalendarStatus,
+          isFuture: date > base.now,
+        };
+      });
+
       return {
         id: customerId,
         customerCode: entry.profile.customerCode,
@@ -407,6 +433,14 @@ export async function getCustomerListData() {
             : entry.todayException?.type === "PAUSE"
               ? "PAUSED"
               : "ACTIVE",
+        calendarData: {
+          monthLabel: new Intl.DateTimeFormat("en-IN", {
+            month: "long",
+            year: "numeric",
+          }).format(base.referenceDate),
+          leadingBlankSlots,
+          days,
+        }
       };
     })
     .sort((a, b) => b.due - a.due);

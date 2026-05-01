@@ -1,12 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import { CalendarDays, Minus, Plus, UserRound } from "lucide-react";
-import { AdminBadge, AdminDivider } from "@/components/layout/admin-ui";
+import { UserRound } from "lucide-react";
+import { AdminBadge } from "@/components/layout/admin-ui";
 import { cn, formatCurrencyINR } from "@/lib/utils";
 import { CustomerCardActions } from "./customer-card-actions";
-import { CustomerDetailModal } from "./customer-detail-modal";
-import { CustomerSchedulePopover } from "./customer-schedule-popover";
+
+type CalendarDay = {
+  dateKey: string;
+  dateLabel: string;
+  dayOfMonth: number;
+  weekdayLabel: string;
+  liters: number;
+  status: "DELIVERED" | "SKIPPED" | "PAUSED" | "PENDING";
+  isFuture: boolean;
+};
 
 type CustomerListItemProps = {
   customer: {
@@ -25,6 +32,11 @@ type CustomerListItemProps = {
     lastPaymentDate?: Date | string | null;
     deliveryInstruction?: string;
     notes?: string;
+    calendarData?: {
+      monthLabel: string;
+      leadingBlankSlots: number;
+      days: CalendarDay[];
+    };
   };
   locale: string;
   tDue: string;
@@ -33,16 +45,13 @@ type CustomerListItemProps = {
   setMenuOpen: (isOpen: boolean) => void;
 };
 
-export function CustomerListItem({ 
-  customer, 
-  locale, 
-  tDue, 
+export function CustomerListItem({
+  customer,
+  locale,
   onView,
   isMenuOpen,
   setMenuOpen
 }: CustomerListItemProps) {
-  const [isScheduleOpen, setIsScheduleOpen] = useState(false);
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   const formatDateShort = (date: Date | string | null | undefined) => {
     if (!date) return "N/A";
@@ -53,10 +62,10 @@ export function CustomerListItem({
   };
 
   return (
-    <article 
+    <article
       className={cn(
         "admin-panel rounded-[22px] px-4 py-4 transition relative group",
-        (isMenuOpen || isPopoverOpen) ? "z-[60]" : "z-10",
+        isMenuOpen ? "z-[60]" : "z-10",
         "hover:bg-white active:scale-[0.995]"
       )}
     >
@@ -91,7 +100,7 @@ export function CustomerListItem({
 
         {/* 3. Due & Actions Section (Right) */}
         <div className="flex items-center justify-between sm:justify-end gap-3 pointer-events-auto sm:min-w-[200px]">
-          <div className="text-right mr-3">
+          <div className="flex flex-col items-start mr-3">
             <p
               className={cn(
                 "text-[15px] font-black tracking-tight",
@@ -101,34 +110,65 @@ export function CustomerListItem({
               {formatCurrencyINR(customer.due)}
             </p>
             <p className="text-[10px] font-bold uppercase text-gray-400 mt-0.5">
-              Due <span className="mx-1 text-gray-300">•</span> 
+              Due <span className="mx-1 text-gray-300">•</span>
               <span className="text-gray-500 lowercase first-letter:uppercase">paid: {formatDateShort(customer.lastPaymentDate)}</span>
             </p>
           </div>
 
-          <div className="flex items-center gap-1.5">
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setIsPopoverOpen(!isPopoverOpen)}
-                className={cn(
-                  "flex h-10 w-10 items-center justify-center rounded-xl transition-all active:scale-90",
-                  isPopoverOpen ? "bg-blue-100 text-blue-600 shadow-inner" : "bg-gray-50 text-gray-400 hover:bg-blue-50 hover:text-blue-500"
-                )}
-                title="Delivery Schedule"
-              >
-                <CalendarDays className="h-5 w-5" />
-              </button>
+          <div className="flex items-center gap-4 flex-nowrap">
+            {/* Improved Mini Calendar Preview */}
+            {customer.calendarData && (
+              <div className="flex flex-col gap-1 items-end">
+                <span className="text-[9px] font-black uppercase text-gray-300 tracking-tighter mr-1">
+                  {customer.calendarData.monthLabel.split(" ")[0]}
+                </span>
+                <div
+                  className="grid grid-cols-7 gap-[2px] p-1 bg-gray-50 rounded-lg border border-gray-100 shadow-inner"
+                  style={{ width: '74px' }}
+                >
+                  {Array.from({ length: customer.calendarData.leadingBlankSlots }).map((_, i) => (
+                    <div key={`blank-${i}`} className="w-2 h-2" />
+                  ))}
+                  {customer.calendarData.days.map((day) => {
+                    const isToday = day.dateKey === new Date().toISOString().slice(0, 10);
+                    return (
+                      <div
+                        key={day.dateKey}
+                        title={`${day.dateLabel}: ${day.status}`}
+                        className={cn(
+                          "w-2 h-2 rounded-[2px] border-[0.5px] flex items-center justify-center text-[5px] font-bold transition-all",
+                          day.isFuture ? "bg-white border-gray-50 text-gray-300" :
+                            day.status === "PAUSED" ? "bg-amber-400 border-amber-500 text-amber-900" :
+                              day.status === "SKIPPED" ? "bg-rose-400 border-rose-500 text-rose-900" :
+                                day.status === "DELIVERED" ? "bg-emerald-400 border-emerald-500 text-emerald-900" :
+                                  "bg-white border-gray-100",
+                          isToday && "ring-[1px] ring-blue-500 ring-offset-[0.5px] z-10 scale-110"
+                        )}
+                      >
+                        {/* Optional: show day number if it fits nicely, or keep it as dots but with title */}
+                      </div>
+                    );
+                  })}
+                </div>
+                {/* Tiny Legend */}
+                <div className="flex gap-2 pr-1">
+                  <div className="flex items-center gap-0.5">
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    <span className="text-[7px] font-black text-gray-400 uppercase">D</span>
+                  </div>
+                  <div className="flex items-center gap-0.5">
+                    <div className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                    <span className="text-[7px] font-black text-gray-400 uppercase">S</span>
+                  </div>
+                  <div className="flex items-center gap-0.5">
+                    <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                    <span className="text-[7px] font-black text-gray-400 uppercase">P</span>
+                  </div>
+                </div>
+              </div>
+            )}
 
-              <CustomerSchedulePopover 
-                isOpen={isPopoverOpen}
-                onClose={() => setIsPopoverOpen(false)}
-                customerCode={customer.customerCode}
-                onViewFull={() => setIsScheduleOpen(true)}
-              />
-            </div>
-
-            <CustomerCardActions 
+            <CustomerCardActions
               id={customer.id}
               customerCode={customer.customerCode}
               isMenuOpen={isMenuOpen}
@@ -140,13 +180,6 @@ export function CustomerListItem({
         </div>
       </div>
 
-      <CustomerDetailModal
-        isOpen={isScheduleOpen}
-        onClose={() => setIsScheduleOpen(false)}
-        customer={customer}
-        locale={locale}
-        mode="schedule"
-      />
     </article>
   );
 }
