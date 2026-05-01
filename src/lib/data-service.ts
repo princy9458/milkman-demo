@@ -787,6 +787,59 @@ export async function getAdminCalendarData(filters?: {
   };
 }
 
+export async function getCustomerMonthlyCalendar(customerCode: string, month: number, year: number) {
+  await connectToDatabase();
+  const date = new Date(year, month - 1, 1);
+  const monthStart = new Date(year, month - 1, 1);
+  const monthEnd = new Date(year, month, 0);
+
+  const profiles = await CustomerProfile.find({ customerCode }).lean<PlainCustomerProfile[]>();
+  if (!profiles.length) return null;
+  const profile = profiles[0];
+  const customerId = String(profile._id);
+
+  const [exceptions, deliveries, plans] = await Promise.all([
+    DeliveryException.find({ customerId, date: { $gte: monthStart, $lte: monthEnd } }).lean<PlainDeliveryException[]>(),
+    Delivery.find({ customerId, date: { $gte: monthStart, $lte: monthEnd } }).lean<PlainDelivery[]>(),
+    MilkPlan.find({ customerId, isActive: true }).sort({ startDate: -1 }).lean<PlainMilkPlan[]>(),
+  ]);
+
+  const activePlan = plans[0] || null;
+  const monthDayCount = monthEnd.getDate();
+  const leadingBlankSlots = monthStart.getDay();
+
+  const days = Array.from({ length: monthDayCount }, (_, index) => {
+    const dayNum = index + 1;
+    const dayDate = new Date(year, month - 1, dayNum);
+    const dayKey = `${year}-${String(month).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
+    
+    const exception = exceptions.find(ex => toDate(ex.date)?.toDateString() === dayDate.toDateString());
+    const delivery = deliveries.find(d => toDate(d.date)?.toDateString() === dayDate.toDateString());
+    
+    let status: CalendarStatus = "PENDING";
+    if (exception) {
+      status = exception.type === "PAUSE" ? "PAUSED" : "SKIPPED";
+    } else if (delivery) {
+      status = delivery.status;
+    }
+
+    return {
+      dateKey: dayKey,
+      dayOfMonth: dayNum,
+      weekdayLabel: new Intl.DateTimeFormat("en-IN", { weekday: "short" }).format(dayDate),
+      status,
+      liters: delivery ? delivery.quantityDelivered : (exception ? 0 : activePlan?.quantityLiters ?? 0),
+      isFuture: dayDate.getTime() > Date.now(),
+    };
+  });
+
+  return {
+    monthLabel: new Intl.DateTimeFormat("en-IN", { month: "long", year: "numeric" }).format(date),
+    leadingBlankSlots,
+    days,
+  };
+}
+
 export async function getCustomerCalendarData(customerCode?: string | null) {
   const base = await getBaseData();
   const customerId =

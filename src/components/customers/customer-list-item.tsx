@@ -1,6 +1,6 @@
 "use client";
 
-import { UserRound } from "lucide-react";
+import { CalendarDays, UserRound } from "lucide-react";
 import { AdminBadge } from "@/components/layout/admin-ui";
 import { cn, formatCurrencyINR } from "@/lib/utils";
 import { CustomerCardActions } from "./customer-card-actions";
@@ -21,17 +21,11 @@ type CustomerListItemProps = {
     customerCode: string;
     name: string;
     phone: string;
-    quantity: number;
-    quantityLabel: string;
-    due: number;
-    rate: number;
-    address: string;
     areaName: string;
-    areaCode: string;
-    status: "ACTIVE" | "PAUSED" | "INACTIVE";
-    lastPaymentDate?: Date | string | null;
-    deliveryInstruction?: string;
-    notes?: string;
+    quantity: number;
+    due: number;
+    lastPaymentDate: Date | null;
+    status: string;
     calendarData?: {
       monthLabel: string;
       leadingBlankSlots: number;
@@ -40,7 +34,7 @@ type CustomerListItemProps = {
   };
   locale: string;
   tDue: string;
-  onView?: (mode: "view" | "details" | "schedule") => void;
+  onView?: (mode: "view" | "details" | "edit" | "schedule" | "calendar") => void;
   isMenuOpen: boolean;
   setMenuOpen: (isOpen: boolean) => void;
 };
@@ -48,13 +42,13 @@ type CustomerListItemProps = {
 export function CustomerListItem({
   customer,
   locale,
+  tDue,
   onView,
   isMenuOpen,
-  setMenuOpen
+  setMenuOpen,
 }: CustomerListItemProps) {
-
-  const formatDateShort = (date: Date | string | null | undefined) => {
-    if (!date) return "N/A";
+  const formatDateShort = (date: Date | null) => {
+    if (!date) return "n/a";
     return new Intl.DateTimeFormat("en-IN", {
       day: "2-digit",
       month: "short",
@@ -110,63 +104,23 @@ export function CustomerListItem({
               {formatCurrencyINR(customer.due)}
             </p>
             <p className="text-[10px] font-bold uppercase text-gray-400 mt-0.5">
-              Due <span className="mx-1 text-gray-300">•</span>
+              {tDue} <span className="mx-1 text-gray-300">•</span>
               <span className="text-gray-500 lowercase first-letter:uppercase">paid: {formatDateShort(customer.lastPaymentDate)}</span>
             </p>
           </div>
 
           <div className="flex items-center gap-4 flex-nowrap">
-            {/* Improved Mini Calendar Preview */}
-            {customer.calendarData && (
-              <div className="flex flex-col gap-1 items-end">
-                <span className="text-[9px] font-black uppercase text-gray-300 tracking-tighter mr-1">
-                  {customer.calendarData.monthLabel.split(" ")[0]}
-                </span>
-                <div
-                  className="grid grid-cols-7 gap-[2px] p-1 bg-gray-50 rounded-lg border border-gray-100 shadow-inner"
-                  style={{ width: '74px' }}
-                >
-                  {Array.from({ length: customer.calendarData.leadingBlankSlots }).map((_, i) => (
-                    <div key={`blank-${i}`} className="w-2 h-2" />
-                  ))}
-                  {customer.calendarData.days.map((day) => {
-                    const isToday = day.dateKey === new Date().toISOString().slice(0, 10);
-                    return (
-                      <div
-                        key={day.dateKey}
-                        title={`${day.dateLabel}: ${day.status}`}
-                        className={cn(
-                          "w-2 h-2 rounded-[2px] border-[0.5px] flex items-center justify-center text-[5px] font-bold transition-all",
-                          day.isFuture ? "bg-white border-gray-50 text-gray-300" :
-                            day.status === "PAUSED" ? "bg-amber-400 border-amber-500 text-amber-900" :
-                              day.status === "SKIPPED" ? "bg-rose-400 border-rose-500 text-rose-900" :
-                                day.status === "DELIVERED" ? "bg-emerald-400 border-emerald-500 text-emerald-900" :
-                                  "bg-white border-gray-100",
-                          isToday && "ring-[1px] ring-blue-500 ring-offset-[0.5px] z-10 scale-110"
-                        )}
-                      >
-                        {/* Optional: show day number if it fits nicely, or keep it as dots but with title */}
-                      </div>
-                    );
-                  })}
-                </div>
-                {/* Tiny Legend */}
-                <div className="flex gap-2 pr-1">
-                  <div className="flex items-center gap-0.5">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                    <span className="text-[7px] font-black text-gray-400 uppercase">D</span>
-                  </div>
-                  <div className="flex items-center gap-0.5">
-                    <div className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-                    <span className="text-[7px] font-black text-gray-400 uppercase">S</span>
-                  </div>
-                  <div className="flex items-center gap-0.5">
-                    <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                    <span className="text-[7px] font-black text-gray-400 uppercase">P</span>
-                  </div>
-                </div>
-              </div>
-            )}
+            {/* Calendar Icon - Opens Modal */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onView?.('calendar');
+              }}
+              className="flex items-center justify-center h-11 w-11 rounded-2xl bg-white border border-gray-100 shadow-sm text-blue-600 hover:bg-blue-50 transition-all active:scale-95 group"
+              title="View Delivery Calendar"
+            >
+              <CalendarDays className="h-5 w-5 group-hover:scale-110 transition-transform" />
+            </button>
 
             <CustomerCardActions
               id={customer.id}
@@ -179,7 +133,6 @@ export function CustomerListItem({
           </div>
         </div>
       </div>
-
     </article>
   );
 }
