@@ -52,7 +52,17 @@
     "password": "Password",
     "passwordPlaceholder": "Enter password",
     "submit": "Login",
-    "forgot": "Forgot password?"
+    "forgot": "Forgot password?",
+    "sendOtp": "Send OTP",
+    "verifyOtp": "Verify OTP & Login",
+    "otp": "Enter OTP",
+    "otpPlaceholder": "6-digit OTP",
+    "resendOtp": "Resend OTP",
+    "sending": "Sending OTP...",
+    "verifying": "Verifying...",
+    "invalidOtp": "Invalid OTP",
+    "expiredOtp": "OTP Expired",
+    "success": "Login successful"
   },
   "home": {
     "hero": {

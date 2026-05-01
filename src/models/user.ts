@@ -10,7 +10,6 @@ const userSchema = new Schema(
     },
     name: {
       type: String,
-      required: true,
       trim: true,
     },
     phone: {
@@ -26,6 +25,12 @@ const userSchema = new Schema(
     },
     passwordHash: {
       type: String,
+    },
+    otp: {
+      type: String,
+    },
+    otpExpiry: {
+      type: Date,
     },
     preferredLanguage: {
       type: String,

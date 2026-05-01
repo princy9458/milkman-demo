@@ -52,7 +52,17 @@
     "password": "पासवर्ड",
     "passwordPlaceholder": "पासवर्ड दर्ज करें",
     "submit": "लॉगिन",
-    "forgot": "पासवर्ड भूल गए?"
+    "forgot": "पासवर्ड भूल गए?",
+    "sendOtp": "OTP भेजें",
+    "verifyOtp": "OTP सत्यापित करें",
+    "otp": "OTP दर्ज करें",
+    "otpPlaceholder": "6-अंकीय OTP",
+    "resendOtp": "OTP दोबारा भेजें",
+    "sending": "OTP भेज रहे हैं...",
+    "verifying": "सत्यापित कर रहे हैं...",
+    "invalidOtp": "गलत OTP",
+    "expiredOtp": "OTP समाप्त हो गया",
+    "success": "लॉगिन सफल"
   },
   "home": {
     "hero": {
