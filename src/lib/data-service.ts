@@ -287,6 +287,7 @@ async function getBaseData() {
     ]);
 
   return {
+    now: new Date(),
     referenceDate,
     monthStart,
     monthEnd,
@@ -401,7 +402,7 @@ export async function getCustomerListData() {
           weekdayLabel: new Intl.DateTimeFormat("en-IN", { weekday: "short" }).format(date),
           liters,
           status: (exception?.type === "PAUSE" ? "PAUSED" : exception?.type === "SKIP" ? "SKIPPED" : "DELIVERED") as CalendarStatus,
-          isFuture: date > base.now,
+          isFuture: date.getTime() > base.now.getTime(),
         };
       });
 
