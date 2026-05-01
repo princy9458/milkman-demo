@@ -10,10 +10,20 @@ export function UserMenu({ locale }: { locale: string }) {
   const router = useRouter();
 
   useEffect(() => {
-    const userStr = localStorage.getItem("user");
-    if (userStr) {
-      setUser(JSON.parse(userStr));
-    }
+    const checkUser = () => {
+      const userStr = localStorage.getItem("user");
+      if (userStr) {
+        setUser(JSON.parse(userStr));
+      } else {
+        setUser(null);
+      }
+    };
+
+    checkUser();
+
+    // Listen for storage changes (e.g. from LoginForm clearing the session)
+    window.addEventListener("storage", checkUser);
+    return () => window.removeEventListener("storage", checkUser);
   }, []);
 
   const handleLogout = () => {

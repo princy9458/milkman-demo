@@ -22,7 +22,8 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
       if (!token) {
         if (pathname.includes("/admin") || pathname.includes("/customer")) {
-          router.push(loginPath);
+          const intendedRole = pathname.includes("/admin") ? "admin" : "customer";
+          router.push(`${loginPath}?role=${intendedRole}`);
         } else {
           setAuthorized(true);
         }

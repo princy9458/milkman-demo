@@ -1,19 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2, Phone, KeyRound, ArrowRight } from "lucide-react";
 
 export function LoginForm() {
   const t = useTranslations("auth");
   const router = useRouter();
-  
+  const searchParams = useSearchParams();
+  const intendedRole = searchParams.get("role");
+
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState(1); // 1: Phone, 2: OTP
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    // Clear any old session when reaching the login page
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.dispatchEvent(new Event("storage"));
+  }, []);
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,7 +59,7 @@ export function LoginForm() {
       const res = await fetch("/api/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, otp }),
+        body: JSON.stringify({ phone, otp, intendedRole }),
       });
 
       const data = await res.json();
@@ -58,12 +67,12 @@ export function LoginForm() {
       if (res.ok) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
-        
+
         // Redirect based on role
         if (data.user.role === "SUPER_ADMIN") {
-          router.push("/admin");
+          router.push("/admin/dashboard");
         } else {
-          router.push("/dashboard");
+          router.push("/customer/dashboard");
         }
       } else {
         setError(data.error || "Invalid OTP");
@@ -76,10 +85,10 @@ export function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto p-6 space-y-8 bg-white rounded-2xl shadow-xl">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-900">{t("title")}</h1>
-        <p className="mt-2 text-gray-600">{t("description")}</p>
+    <div className="w-full max-w-md mx-auto p-8 space-y-8 bg-white rounded-[28px] shadow-md border border-white/50">
+      <div className="text-center space-y-2">
+        <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">{t("title")}</h1>
+        <p className="text-sm text-gray-500 font-medium">{t("description")}</p>
       </div>
 
       <form onSubmit={step === 1 ? handleSendOtp : handleVerifyOtp} className="space-y-6">
@@ -88,10 +97,12 @@ export function LoginForm() {
             <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
               {t("mobile")}
             </label>
-            <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                <Phone size={20} />
-              </span>
+            <div className="search">
+              <Phone
+                className="h-5 w-5"
+                style={{ color: "var(--ink-400)" }}
+                aria-hidden="true"
+              />
               <input
                 id="phone"
                 type="tel"
@@ -99,7 +110,7 @@ export function LoginForm() {
                 placeholder={t("mobilePlaceholder")}
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="block w-full pl-10 pr-3 py-4 text-lg border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                className="flex-1"
               />
             </div>
           </div>
@@ -108,10 +119,12 @@ export function LoginForm() {
             <label htmlFor="otp" className="block text-sm font-medium text-gray-700">
               {t("otp")}
             </label>
-            <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                <KeyRound size={20} />
-              </span>
+            <div className="search">
+              <KeyRound
+                className="h-5 w-5"
+                style={{ color: "var(--ink-400)" }}
+                aria-hidden="true"
+              />
               <input
                 id="otp"
                 type="text"
@@ -120,7 +133,7 @@ export function LoginForm() {
                 placeholder={t("otpPlaceholder")}
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
-                className="block w-full pl-10 pr-3 py-4 text-center text-2xl font-mono tracking-[0.5em] border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                className="flex-1 text-center text-2xl font-mono tracking-[0.5em]"
               />
             </div>
           </div>
@@ -131,7 +144,7 @@ export function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full flex items-center justify-center py-4 px-6 border border-transparent rounded-xl shadow-sm text-lg font-bold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-all"
+          className="btn btn-brand btn-block text-lg font-bold disabled:opacity-50 transition-all mt-4"
         >
           {loading ? (
             <Loader2 className="animate-spin mr-2" />
@@ -144,7 +157,7 @@ export function LoginForm() {
         </button>
 
         {step === 2 && (
-          <div className="text-center">
+          <div className="space-y-4 text-center">
             <button
               type="button"
               onClick={() => setStep(1)}
@@ -152,6 +165,29 @@ export function LoginForm() {
             >
               {t("resendOtp")}
             </button>
+
+            {process.env.NODE_ENV === "development" && (
+              <div className="pt-4 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOtp("123456");
+                    // We need to trigger the login with the fixed OTP
+                    // Since state update is async, we can't just call handleVerifyOtp(e)
+                    // but we can simulate the verify call directly
+                    const demoEvent = { preventDefault: () => { } } as React.FormEvent;
+                    setTimeout(() => {
+                      const submitBtn = document.querySelector('button[type="submit"]') as HTMLButtonElement;
+                      submitBtn?.click();
+                    }, 0);
+                  }}
+                  className="w-full py-3 px-4 border-2 border-dashed border-blue-200 rounded-xl text-blue-600 font-semibold hover:bg-blue-50 transition-all flex items-center justify-center gap-2"
+                >
+                  <span className="text-xl">🚀</span> Quick Demo Login (123456)
+                </button>
+                <p className="mt-2 text-xs text-gray-400">Dev Only: Bypasses OTP check</p>
+              </div>
+            )}
           </div>
         )}
       </form>

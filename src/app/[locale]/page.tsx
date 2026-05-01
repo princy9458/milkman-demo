@@ -24,7 +24,7 @@ export default async function LocaleHomePage({ params }: LocaleHomePageProps) {
       </div>
 
       <div className="split-2 mt-3">
-        <Link href={`/${locale}/customer/dashboard`} className="card">
+        <Link href={`/${locale}/login?role=customer`} className="card">
           <div className="card-row">
             <div className="thumb">
               <UserCircle className="h-5 w-5" />
@@ -41,7 +41,7 @@ export default async function LocaleHomePage({ params }: LocaleHomePageProps) {
           </div>
         </Link>
 
-        <Link href={`/${locale}/admin/dashboard`} className="card">
+        <Link href={`/${locale}/login?role=admin`} className="card">
           <div className="card-row">
             <div className="thumb sun">
               <LayoutDashboard className="h-5 w-5" />

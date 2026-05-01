@@ -5,7 +5,7 @@ import { signToken } from "@/lib/auth";
 
 export async function POST(req: Request) {
   try {
-    const { phone, otp } = await req.json();
+    const { phone, otp, intendedRole } = await req.json();
 
     if (!phone || !otp) {
       return NextResponse.json({ error: "Phone and OTP are required" }, { status: 400 });
@@ -13,19 +13,37 @@ export async function POST(req: Request) {
 
     await connectToDatabase();
 
-    const user = await User.findOne({ phone });
+    let user = await User.findOne({ phone });
 
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      // Auto-create user in dev bypass if not found
+      if (process.env.NODE_ENV === "development" && otp === "123456") {
+        user = await User.create({
+          phone,
+          role: intendedRole === "admin" ? "SUPER_ADMIN" : "CUSTOMER",
+          status: "ACTIVE"
+        });
+      } else {
+        return NextResponse.json({ error: "User not found" }, { status: 404 });
+      }
     }
 
-    // Check if OTP matches and is not expired
-    if (user.otp !== otp) {
-      return NextResponse.json({ error: "Invalid OTP" }, { status: 401 });
-    }
+    // Bypass OTP verification in development mode
+    const isDevBypass = process.env.NODE_ENV === "development" && otp === "123456";
 
-    if (new Date() > user.otpExpiry) {
-      return NextResponse.json({ error: "OTP expired" }, { status: 401 });
+    if (isDevBypass) {
+      // Update role based on intent for demo
+      user.role = intendedRole === "admin" ? "SUPER_ADMIN" : "CUSTOMER";
+      await user.save();
+    } else {
+      // Check if OTP matches and is not expired
+      if (user.otp !== otp) {
+        return NextResponse.json({ error: "Invalid OTP" }, { status: 401 });
+      }
+
+      if (new Date() > user.otpExpiry) {
+        return NextResponse.json({ error: "OTP expired" }, { status: 401 });
+      }
     }
 
     // Clear OTP after successful verification
