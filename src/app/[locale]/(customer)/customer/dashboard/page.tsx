@@ -101,23 +101,40 @@ export default async function CustomerDashboardPage({
         </button>
       </div>
 
-      {/* Hero card */}
-      <section className="hero">
-        <span className="eyebrow">{t("home.hero.eyebrow")}</span>
-        <h2>{t("home.hero.title")}</h2>
-        <p>
-          {customer.quantityLabel} · {customer.areaName}
-        </p>
-        <div className="hero-actions">
-          <button type="button" className="btn btn-sm btn-ghost">
-            <Pause className="h-4 w-4" />
-            {t("home.hero.pause")}
-          </button>
-          <Link href={`/${locale}/customer/calendar`} className="btn btn-sm btn-ghost">
-            {t("home.hero.track")}
-          </Link>
+      {/* Hero + monthly stats — side by side from tablet up */}
+      <div className="split-2 split-2-wide">
+        <section className="hero">
+          <span className="eyebrow">{t("home.hero.eyebrow")}</span>
+          <h2>{t("home.hero.title")}</h2>
+          <p>
+            {customer.quantityLabel} · {customer.areaName}
+          </p>
+          <div className="hero-actions">
+            <button type="button" className="btn btn-sm btn-ghost">
+              <Pause className="h-4 w-4" />
+              {t("home.hero.pause")}
+            </button>
+            <Link href={`/${locale}/customer/calendar`} className="btn btn-sm btn-ghost">
+              {t("home.hero.track")}
+            </Link>
+          </div>
+        </section>
+
+        <div className="stats-grid" style={{ gridTemplateColumns: "repeat(2, 1fr)" }}>
+          <article className="stat">
+            <div className="stat-label">{t("dashboard.thisMonth")}</div>
+            <div className="stat-value">{formatCurrencyINR(customer.billed)}</div>
+            <div className="trend up">{t("dashboard.monthHint")}</div>
+          </article>
+          <article className="stat">
+            <div className="stat-label">{t("dashboard.pendingDue")}</div>
+            <div className="stat-value">{formatCurrencyINR(customer.due)}</div>
+            <div className="trend down">
+              {latestEntry?.dateLabel ?? t("dashboard.noUpdate")}
+            </div>
+          </article>
         </div>
-      </section>
+      </div>
 
       {/* Quick actions */}
       <div className="section-head">
@@ -162,7 +179,7 @@ export default async function CustomerDashboardPage({
         </Link>
       </div>
 
-      {/* Subscriptions */}
+      {/* Subscription details */}
       <div className="section-head">
         <h3>{t("home.subscriptions")}</h3>
         <Link href={`/${locale}/customer/billing`}>{t("common.viewAll")}</Link>
@@ -196,25 +213,6 @@ export default async function CustomerDashboardPage({
           </span>
         </div>
       </article>
-
-      {/* Monthly stats */}
-      <div className="section-head">
-        <h3>{t("dashboard.thisMonth")}</h3>
-      </div>
-      <div className="stats-grid">
-        <article className="stat">
-          <div className="stat-label">{t("dashboard.thisMonth")}</div>
-          <div className="stat-value">{formatCurrencyINR(customer.billed)}</div>
-          <div className="trend up">{t("dashboard.monthHint")}</div>
-        </article>
-        <article className="stat">
-          <div className="stat-label">{t("dashboard.pendingDue")}</div>
-          <div className="stat-value">{formatCurrencyINR(customer.due)}</div>
-          <div className="trend down">
-            {latestEntry?.dateLabel ?? t("dashboard.noUpdate")}
-          </div>
-        </article>
-      </div>
     </CustomerShell>
   );
 }

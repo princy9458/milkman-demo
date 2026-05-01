@@ -23,7 +23,7 @@ export default async function LocaleHomePage({ params }: LocaleHomePageProps) {
         </div>
       </div>
 
-      <div className="stack gap-3 mt-3">
+      <div className="split-2 mt-3">
         <Link href={`/${locale}/customer/dashboard`} className="card">
           <div className="card-row">
             <div className="thumb">
@@ -60,36 +60,6 @@ export default async function LocaleHomePage({ params }: LocaleHomePageProps) {
           </div>
         </Link>
       </div>
-
-      <div className="section-head">
-        <h3>{t("landing.starterStatus")}</h3>
-      </div>
-      <ul className="stack gap-2" style={{ listStyle: "none", padding: 0, margin: 0 }}>
-        <li className="list-item">
-          <span className="status-dot mint" style={{ marginLeft: 4 }} />
-          <div className="meta">
-            <strong>{t("landing.statusItems.shell")}</strong>
-          </div>
-        </li>
-        <li className="list-item">
-          <span className="status-dot mint" style={{ marginLeft: 4 }} />
-          <div className="meta">
-            <strong>{t("landing.statusItems.locales")}</strong>
-          </div>
-        </li>
-        <li className="list-item">
-          <span className="status-dot mint" style={{ marginLeft: 4 }} />
-          <div className="meta">
-            <strong>{t("landing.statusItems.mongo")}</strong>
-          </div>
-        </li>
-        <li className="list-item">
-          <span className="status-dot mint" style={{ marginLeft: 4 }} />
-          <div className="meta">
-            <strong>{t("landing.statusItems.skeletons")}</strong>
-          </div>
-        </li>
-      </ul>
     </main>
   );
 }

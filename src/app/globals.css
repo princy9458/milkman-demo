@@ -110,8 +110,10 @@ input, select, textarea { font-family: inherit; }
 ::selection { background: rgba(37, 99, 235, 0.18); }
 
 /* =========================================================
-   App shell (replaces the phone frame from the mock).
-   Mobile: fills viewport. Tablet/desktop: centered column.
+   App shell.
+   Mobile: single column, full width. Tablet: roomier.
+   Desktop: wider canvas so customer pages can place
+   sections side by side instead of stacking forever.
    ========================================================= */
 .app-shell {
   min-height: 100vh;
@@ -128,19 +130,41 @@ input, select, textarea { font-family: inherit; }
 }
 @media (min-width: 768px) {
   .app-shell-main {
-    max-width: 540px;
-    padding: 24px 24px 120px;
+    max-width: 760px;
+    padding: 24px 28px 128px;
   }
 }
-@media (min-width: 1200px) {
+@media (min-width: 1024px) {
   .app-shell-main {
-    max-width: 560px;
+    max-width: 1080px;
+    padding: 28px 36px 140px;
+  }
+}
+@media (min-width: 1280px) {
+  .app-shell-main {
+    max-width: 1200px;
   }
 }
 
-/* Desktop: the bottom nav is a floating bar, kept readable on wide screens */
-.app-shell-desktop-split {
-  display: block;
+/* Two-column responsive split used by customer pages.
+   Stacks on phones; side-by-side from tablet up. */
+.split-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+.split-3 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 768px) {
+  .split-2 { grid-template-columns: 1fr 1fr; }
+  .split-3 { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 1024px) {
+  .split-2.split-2-wide { grid-template-columns: 1.4fr 1fr; }
+  .split-2.split-2-narrow { grid-template-columns: 1fr 1.4fr; }
 }
 
 /* =========================================================
@@ -331,15 +355,19 @@ input, select, textarea { font-family: inherit; }
 .bottom-nav.four { grid-template-columns: repeat(4,1fr); }
 @media (min-width: 768px) {
   .bottom-nav {
-    max-width: 540px;
-    border-radius: 20px 20px 0 0;
+    max-width: 560px;
+    bottom: 16px;
+    height: 68px;
+    padding-bottom: 0;
+    border-radius: 999px;
     border: 1px solid var(--border);
-    border-bottom: none;
-    bottom: 0;
+    box-shadow: 0 18px 36px -16px rgba(15,23,42,.25);
   }
 }
-@media (min-width: 1200px) {
-  .bottom-nav { max-width: 560px; }
+@media (min-width: 1024px) {
+  .bottom-nav {
+    max-width: 600px;
+  }
 }
 
 .nav-item {
@@ -371,6 +399,11 @@ input, select, textarea { font-family: inherit; }
   padding: 18px;
   overflow: hidden;
   box-shadow: 0 20px 30px -14px rgba(37,99,235,.5);
+}
+@media (min-width: 768px) {
+  .hero { padding: 22px 24px; border-radius: 28px; }
+  .hero h2 { font-size: 26px; }
+  .hero p { font-size: 13px; }
 }
 .hero::after {
   content:""; position: absolute; right: -30px; bottom: -50px;
@@ -458,10 +491,66 @@ input, select, textarea { font-family: inherit; }
 .cal-day.today { background: var(--ink-900); color: #fff; }
 .cal-day .micro { width: 4px; height: 4px; border-radius: 50%; background: currentColor; opacity:.6; margin-top: 2px; }
 
+/* Calendar month grid (used inside the responsive MonthGrid component) */
+.month-grid-cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 64px;
+  padding: 8px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--ink-700);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.month-grid-cell.is-clickable { cursor: pointer; }
+.month-grid-cell.is-clickable:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+.month-grid-cell.is-future { border-style: dashed; opacity: .55; }
+.month-grid-cell.is-today { box-shadow: 0 0 0 2px var(--brand), var(--shadow-sm); }
+.month-grid-cell.delivered { background: var(--mint-soft); border-color: rgba(16,185,129,.25); color: #065F46; }
+.month-grid-cell.paused { background: var(--sun-soft); border-color: rgba(245,179,1,.25); color: #92400E; }
+.month-grid-cell.skipped { background: var(--rose-soft); border-color: rgba(244,63,94,.25); color: #9F1239; }
+.month-grid-cell .day-number {
+  font-size: 14px; font-weight: 800; letter-spacing: -0.01em;
+}
+.month-grid-cell .day-meta {
+  font-size: 9px; font-weight: 700; opacity: .7;
+  text-transform: uppercase; letter-spacing: .04em;
+}
+.month-grid-cell .day-liters {
+  margin-top: auto;
+  font-size: 12px; font-weight: 800; letter-spacing: -0.01em;
+}
+.month-grid-cell .pill-row {
+  display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px;
+}
+.month-grid-cell .mini-pill {
+  display: inline-flex; align-items: center;
+  padding: 2px 6px; border-radius: 999px;
+  background: rgba(255,255,255,.7);
+  font-size: 9px; font-weight: 800;
+  color: inherit;
+}
+@media (min-width: 768px) {
+  .month-grid-cell { min-height: 96px; padding: 10px; border-radius: 18px; }
+  .month-grid-cell .day-number { font-size: 16px; }
+  .month-grid-cell .day-liters { font-size: 14px; }
+}
+@media (min-width: 1024px) {
+  .month-grid-cell { min-height: 116px; padding: 12px; border-radius: 22px; }
+  .month-grid-cell .day-number { font-size: 18px; }
+  .month-grid-cell .day-liters { font-size: 15px; }
+  .month-grid-cell .mini-pill { font-size: 10px; padding: 3px 8px; }
+}
+
 /* =========================================================
    Stat cards
    ========================================================= */
 .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+@media (min-width: 768px) {
+  .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 14px; }
+}
 .stat {
   background: var(--surface); border-radius: 18px; padding: 14px;
   box-shadow: var(--shadow-sm);
