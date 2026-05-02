@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { CheckCircle2, Info, MinusCircle, PauseCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { CalendarDayRecord } from "@/lib/calendar";
@@ -9,7 +10,6 @@ type DashboardCalendarProps = {
   monthLabel: string;
   leadingBlankSlots: number;
   days: CalendarDayRecord[];
-  t: any;
 };
 
 const weekLabels = ["S", "M", "T", "W", "T", "F", "S"];
@@ -18,8 +18,8 @@ export function DashboardCalendar({
   monthLabel,
   leadingBlankSlots,
   days,
-  t,
 }: DashboardCalendarProps) {
+  const t = useTranslations();
   const [selectedDay, setSelectedDay] = useState<CalendarDayRecord | null>(null);
   const today = new Date().toISOString().slice(0, 10);
 
@@ -87,19 +87,19 @@ export function DashboardCalendar({
         <div className="mt-8 flex flex-wrap justify-center gap-4 border-t border-gray-50 pt-6">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded-md bg-emerald-500"></div>
-            <span className="text-[11px] font-bold text-gray-500 uppercase tracking-tighter">Delivered</span>
+            <span className="text-[11px] font-bold text-gray-500 uppercase tracking-tighter">{t("calendar.legend.delivered")}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded-md bg-rose-500"></div>
-            <span className="text-[11px] font-bold text-gray-500 uppercase tracking-tighter">Skipped</span>
+            <span className="text-[11px] font-bold text-gray-500 uppercase tracking-tighter">{t("calendar.legend.skipped")}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded-md bg-amber-500"></div>
-            <span className="text-[11px] font-bold text-gray-500 uppercase tracking-tighter">Paused</span>
+            <span className="text-[11px] font-bold text-gray-500 uppercase tracking-tighter">{t("calendar.legend.paused")}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded-md bg-gray-200"></div>
-            <span className="text-[11px] font-bold text-gray-500 uppercase tracking-tighter">Upcoming</span>
+            <span className="text-[11px] font-bold text-gray-500 uppercase tracking-tighter">{t("status.pending")}</span>
           </div>
         </div>
       </section>
@@ -121,10 +121,10 @@ export function DashboardCalendar({
                 <span className="text-xs font-black text-[var(--brand-ink)] uppercase tracking-widest">{selectedDay.dateLabel}</span>
                 <span className="text-lg font-black text-[var(--brand-ink)]">
                   {selectedDay.status === "PENDING" && selectedDay.isFuture
-                    ? "Planned Delivery"
+                    ? t("status.pending")
                     : selectedDay.status === "DELIVERED"
-                      ? `${selectedDay.liters.toFixed(1)}L Delivered`
-                      : selectedDay.status
+                      ? `${selectedDay.liters.toFixed(1)}L ${t("calendar.legend.delivered")}`
+                      : t(`status.${selectedDay.status.toLowerCase()}` as never)
                   }
                 </span>
               </div>
@@ -133,7 +133,7 @@ export function DashboardCalendar({
               onClick={() => setSelectedDay(null)}
               className="px-4 py-2 bg-white rounded-xl text-xs font-black text-[var(--brand)] uppercase shadow-sm active:scale-95 transition-all"
             >
-              Close
+              {t("common.close")}
             </button>
           </div>
         </div>
@@ -146,8 +146,8 @@ export function DashboardCalendar({
             <CheckCircle2 className="h-5 w-5" />
           </div>
           <div className="stack">
-            <span className="text-[10px] font-black uppercase text-gray-400 tracking-tight">Tomorrow</span>
-            <span className="text-sm font-black text-gray-900">Expected</span>
+            <span className="text-[10px] font-black uppercase text-gray-400 tracking-tight">{t("status.today")}</span>
+            <span className="text-sm font-black text-gray-900">{t("status.onTrack")}</span>
           </div>
         </div>
         <div className="bg-white rounded-[24px] p-4 flex items-center gap-4 shadow-sm border border-gray-100">
@@ -155,8 +155,8 @@ export function DashboardCalendar({
             <Info className="h-5 w-5" />
           </div>
           <div className="stack">
-            <span className="text-[10px] font-black uppercase text-gray-400 tracking-tight">Pauses</span>
-            <span className="text-sm font-black text-gray-900">{hasUpcomingPauses ? "Active" : "None"}</span>
+            <span className="text-[10px] font-black uppercase text-gray-400 tracking-tight">{t("home.hero.pause")}</span>
+            <span className="text-sm font-black text-gray-900">{hasUpcomingPauses ? t("status.active") : t("dashboard.noUpdate")}</span>
           </div>
         </div>
       </div>

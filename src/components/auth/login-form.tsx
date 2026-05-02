@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, useParams } from "next/navigation";
 import { Loader2, Phone, KeyRound, ArrowRight } from "lucide-react";
 
 export function LoginForm() {
   const t = useTranslations("auth");
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { locale } = useParams();
   const intendedRole = searchParams.get("role");
 
   const [phone, setPhone] = useState("");
@@ -69,10 +70,10 @@ export function LoginForm() {
         localStorage.setItem("user", JSON.stringify(data.user));
 
         // Redirect based on role
-        if (data.user.role === "SUPER_ADMIN") {
-          router.push("/admin/dashboard");
+        if (data.user.role === "ADMIN") {
+          router.push(`/${locale}/admin/dashboard`);
         } else {
-          router.push("/customer/dashboard");
+          router.push(`/${locale}/customer/dashboard`);
         }
       } else {
         setError(data.error || "Invalid OTP");

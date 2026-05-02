@@ -31,7 +31,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
       }
 
       // Role based protection
-      if (pathname.includes("/admin") && user?.role !== "SUPER_ADMIN") {
+      if (pathname.includes("/admin") && user?.role !== "ADMIN") {
         router.push(loginPath);
         return;
       }

@@ -190,6 +190,14 @@
       "skeletons": ""
     }
   },
+  "selectRole": {
+    "title": "Choose your dashboard",
+    "subtitle": "Select the experience you want to continue with.",
+    "customer": "Customer Dashboard",
+    "customerDesc": "Manage your daily milk plan, view history, and payments.",
+    "admin": "Admin Panel",
+    "adminDesc": "Manage routes, customers, and delivery records."
+  },
   "admin": {
     "shell": {
       "brand": "Milkman",

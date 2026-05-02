@@ -11,7 +11,7 @@ export default function DashboardRedirect() {
     const userStr = localStorage.getItem("user");
     const user = userStr ? JSON.parse(userStr) : null;
 
-    if (user?.role === "SUPER_ADMIN") {
+    if (user?.role === "ADMIN") {
       router.push("/admin/dashboard");
     } else if (user) {
       router.push("/customer/dashboard");

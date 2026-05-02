@@ -22,12 +22,22 @@ const deliverySchema = new Schema(
       min: 0,
       default: 0,
     },
+    defaultQuantity: {
+      type: Number,
+      min: 0,
+      default: 0,
+    },
     extraQuantity: {
       type: Number,
       min: 0,
       default: 0,
     },
     finalQuantity: {
+      type: Number,
+      min: 0,
+      default: 0,
+    },
+    actualQuantity: {
       type: Number,
       min: 0,
       default: 0,

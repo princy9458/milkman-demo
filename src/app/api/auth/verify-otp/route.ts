@@ -18,9 +18,10 @@ export async function POST(req: Request) {
     if (!user) {
       // Auto-create user in dev bypass if not found
       if (process.env.NODE_ENV === "development" && otp === "123456") {
+        const isMagicAdmin = phone === "8888888888";
         user = await User.create({
           phone,
-          role: intendedRole === "admin" ? "SUPER_ADMIN" : "CUSTOMER",
+          role: (intendedRole === "admin" || isMagicAdmin) ? "ADMIN" : "CUSTOMER",
           status: "ACTIVE"
         });
       } else {
@@ -31,11 +32,7 @@ export async function POST(req: Request) {
     // Bypass OTP verification in development mode
     const isDevBypass = process.env.NODE_ENV === "development" && otp === "123456";
 
-    if (isDevBypass) {
-      // Update role based on intent for demo
-      user.role = intendedRole === "admin" ? "SUPER_ADMIN" : "CUSTOMER";
-      await user.save();
-    } else {
+    if (!isDevBypass) {
       // Check if OTP matches and is not expired
       if (user.otp !== otp) {
         return NextResponse.json({ error: "Invalid OTP" }, { status: 401 });
@@ -44,6 +41,11 @@ export async function POST(req: Request) {
       if (new Date() > user.otpExpiry) {
         return NextResponse.json({ error: "OTP expired" }, { status: 401 });
       }
+    }
+
+    // Update role based on intent if provided
+    if (intendedRole === "admin" || intendedRole === "customer") {
+      user.role = intendedRole === "admin" ? "ADMIN" : "CUSTOMER";
     }
 
     // Clear OTP after successful verification

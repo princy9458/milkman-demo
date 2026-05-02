@@ -88,8 +88,10 @@ export async function POST(request: Request) {
     delivery.status = status;
     delivery.quantityDelivered = quantity;
     delivery.baseQuantity = baseQuantity;
+    delivery.defaultQuantity = baseQuantity;
     delivery.extraQuantity = extraQuantity;
     delivery.finalQuantity = quantity;
+    delivery.actualQuantity = quantity;
     delivery.pricePerLiter = activePlan?.pricePerLiter || 0;
     delivery.note = payload.note || "";
     await delivery.save();

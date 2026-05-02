@@ -428,17 +428,24 @@ export function DeliveryOperationsPanel({
                   </AdminBadge>
                 </div>
 
-                {/* Row 2: Location info */}
-                <div className="px-1">
+                <div className="px-1 flex items-center justify-between">
                   <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-                    📍 {task.route} • <span className="text-[var(--admin-primary-strong)]">{(task.baseQuantity + (task.extraQuantity || 0)).toFixed(1)}L</span>
+                    📍 {task.route} • <span className="text-[var(--admin-text)] font-black">{(task.baseQuantity + (task.extraQuantity || 0)).toFixed(1)}L</span>
                   </p>
-                  {task.deliveryInstruction && (
-                    <p className="mt-1 text-[11px] font-medium text-[var(--admin-primary-strong)] italic">
-                      "{task.deliveryInstruction}"
-                    </p>
+                  {task.extraQuantity !== 0 && (
+                    <span className={cn(
+                      "text-[10px] font-black px-1.5 py-0.5 rounded-full",
+                      task.extraQuantity > 0 ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"
+                    )}>
+                      {task.extraQuantity > 0 ? "+" : ""}{task.extraQuantity.toFixed(1)}L
+                    </span>
                   )}
                 </div>
+                {task.deliveryInstruction && (
+                  <p className="px-1 mt-1 text-[11px] font-medium text-[var(--admin-primary-strong)] italic">
+                    "{task.deliveryInstruction}"
+                  </p>
+                )}
 
                 {/* Row 3: Quantity Controls (Centered) */}
                 <div className="flex justify-center">

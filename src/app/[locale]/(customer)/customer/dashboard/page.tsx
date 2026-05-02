@@ -133,7 +133,6 @@ export default async function CustomerDashboardPage({
           monthLabel={calendar.monthMeta.monthLabel}
           leadingBlankSlots={calendar.monthMeta.leadingBlankSlots}
           days={calendar.days}
-          t={t}
         />
       )}
 
