@@ -15,7 +15,11 @@ import { Vendor } from "@/models/vendor";
 type PlainArea = {
   _id: string;
   code: string;
-  name: string;
+  name: {
+    en: string;
+    hi: string;
+    pa: string;
+  };
   isActive?: boolean;
   sortOrder?: number;
 };
@@ -1113,4 +1117,64 @@ export async function getDeliveryOperationOptions() {
     customers,
     products: products.filter((product) => product.isActive !== false),
   };
+}
+export async function getCustomerByUserId(userId: string) {
+  const base = await getBaseData();
+  const entity = buildCustomerEntities(base).find(
+    (entry) => String(entry.profile.userId) === userId
+  );
+
+  if (entity) {
+    return getCustomerDetailData(entity.profile.customerCode);
+  }
+
+  // Fallback: Direct query if not found in base data (e.g. newly created)
+  await connectToDatabase();
+  const profile = await CustomerProfile.findOne({ userId }).lean<PlainCustomerProfile | null>();
+  if (profile) {
+    // If we found it directly, we should still return the full detail.
+    // getCustomerDetailData will fetch getCustomerListData which might still be stale.
+    // So we'll try to return a minimal valid object if it's really new.
+    const detail = await getCustomerDetailData(profile.customerCode);
+    if (detail) return detail;
+
+    // Last resort: Build a minimal detail object for a new customer
+    const user = await User.findById(userId).lean<PlainUser | null>();
+    const plan = await MilkPlan.findOne({ customerId: profile._id, isActive: true }).lean<PlainMilkPlan | null>();
+    
+    return {
+      id: String(profile._id),
+      customerCode: profile.customerCode,
+      name: user?.name || profile.customerCode,
+      phone: user?.phone || "",
+      areaCode: profile.areaCode,
+      areaName: profile.areaName,
+      address: [profile.addressLine1, profile.addressLine2, profile.landmark].filter(Boolean).join(", "),
+      quantityLabel: `${(plan?.quantityLiters || 0).toFixed(1)} ${plan?.unitLabel || "L"}`,
+      quantity: plan?.quantityLiters || 0,
+      rate: plan?.pricePerLiter || 0,
+      due: 0,
+      billed: 0,
+      paid: 0,
+      notes: profile.notes || "",
+      deliveryInstruction: profile.deliveryInstruction || "",
+      deliverySlot: "Morning",
+      deliveryStatus: "PENDING",
+      extraQuantity: 0,
+      lastPaymentDate: null,
+      status: "ACTIVE",
+      preferredLanguage: user?.preferredLanguage || "en",
+      addressLine1: profile.addressLine1,
+      addressLine2: profile.addressLine2 || "",
+      landmark: profile.landmark || "",
+      recentDeliveries: [],
+      calendarData: {
+        monthLabel: new Intl.DateTimeFormat("en-IN", { month: "long", year: "numeric" }).format(new Date()),
+        leadingBlankSlots: new Date(new Date().getFullYear(), new Date().getMonth(), 1).getDay(),
+        days: []
+      }
+    };
+  }
+
+  return null;
 }
