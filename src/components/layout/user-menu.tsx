@@ -34,15 +34,7 @@ export function UserMenu({ locale }: { locale: string }) {
   };
 
   if (!user) {
-    return (
-      <Link
-        href={`/${locale}/login`}
-        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-full hover:bg-blue-700 transition-all shadow-sm"
-      >
-        <LogIn size={16} />
-        <span>Login</span>
-      </Link>
-    );
+    return null;
   }
 
   return (
