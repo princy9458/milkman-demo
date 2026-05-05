@@ -306,14 +306,30 @@ const customStyles = `
   
   @media (max-width: 768px) {
     .stats-row { 
-      grid-template-columns: 1fr;
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding-bottom: 8px;
+      margin: 0 -16px;
+      padding-left: 16px;
+      padding-right: 16px;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none;  /* IE and Edge */
+    }
+    .stats-row::-webkit-scrollbar {
+      display: none;
+    }
+    .stat-card {
+      min-width: 200px;
+      flex-shrink: 0;
+      scroll-snap-align: start;
     }
   }
 
   .stat-card { 
     background: white; 
-    border-radius: 24px; 
-    padding: 24px; 
+    border-radius: 20px; 
+    padding: 16px; 
     position: relative; 
     overflow: hidden; 
     border: 1px solid #f3f4f6;

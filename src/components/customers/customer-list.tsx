@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { CustomerListItem } from "./customer-list-item";
 import { CustomerDetailModal } from "./customer-detail-modal";
-import { CustomerCalendarModal } from "./customer-calendar-modal";
 
 type CustomerListProps = {
   customers: any[];
@@ -21,9 +20,8 @@ export function CustomerList({ customers, areas, locale }: CustomerListProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("ALL");
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
-  const [modalMode, setModalMode] = useState<'view' | 'details' | 'edit' | 'schedule' | 'calendar'>('view');
+  const [modalMode, setModalMode] = useState<'view' | 'details' | 'edit' | 'schedule'>('view');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
   // SEARCH & FILTER LOGIC[cite: 1]
@@ -41,40 +39,36 @@ export function CustomerList({ customers, areas, locale }: CustomerListProps) {
 
   const handleViewCustomer = (customer: any, mode: any = 'view') => {
     setSelectedCustomer(customer);
-    if (mode === 'calendar') {
-      setIsCalendarOpen(true);
-    } else {
-      setModalMode(mode);
-      setIsModalOpen(true);
-    }
+    setModalMode(mode);
+    setIsModalOpen(true);
   };
 
   return (
     <div className="space-y-6">
       {/* SEARCH, FILTER & ADD BAR */}
-      <div className="bg-white rounded-[24px] p-4 sm:p-5 border border-gray-100 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div className="bg-white rounded-[20px] p-3 sm:p-4 border border-gray-100 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-3">
         <div className="relative flex-1 w-full max-w-none lg:max-w-md">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
           <input
             type="text"
             placeholder={t("searchPlaceholder")}
-            className="w-full bg-gray-50 border border-transparent focus:border-[#064e3b] focus:bg-white rounded-xl py-3 pl-12 pr-10 outline-none text-sm font-bold transition-all"
+            className="w-full bg-gray-50 border border-transparent focus:border-[#064e3b] focus:bg-white rounded-lg py-2 pl-10 pr-8 outline-none text-sm font-bold transition-all"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           {searchTerm && (
             <button
               onClick={() => setSearchTerm("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-200 rounded-full text-gray-400"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-200 rounded-full text-gray-400"
             >
               <X size={14} />
             </button>
           )}
         </div>
 
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full lg:w-auto">
           <select
-            className="appearance-none bg-white border border-gray-200 rounded-xl px-5 py-3 text-sm font-black text-gray-600 outline-none cursor-pointer hover:bg-gray-50 transition-all"
+            className="appearance-none bg-white border border-gray-200 rounded-lg px-4 py-2 text-xs font-black text-gray-600 outline-none cursor-pointer hover:bg-gray-50 transition-all"
             value={activeFilter}
             onChange={(e) => setActiveFilter(e.target.value)}
           >
@@ -85,9 +79,9 @@ export function CustomerList({ customers, areas, locale }: CustomerListProps) {
 
           <Link
             href={`/${locale}/admin/customers/new`}
-            className="flex items-center gap-2 px-6 py-3 bg-[#064e3b] !text-white rounded-xl text-sm font-black shadow-lg shadow-green-900/20 hover:bg-black transition-all"
+            className="flex items-center justify-center gap-1.5 px-4 py-2 bg-[#064e3b] !text-white rounded-lg text-xs font-black shadow-lg shadow-green-900/20 hover:bg-black transition-all"
           >
-            <CirclePlus size={18} />
+            <CirclePlus size={16} />
             {t("addCustomer")}
           </Link>
         </div>
@@ -101,7 +95,6 @@ export function CustomerList({ customers, areas, locale }: CustomerListProps) {
               key={customer.id}
               customer={customer}
               locale={locale}
-              tDue={tCommon ? tCommon("due") : "Due"}
               onView={(mode: any) => handleViewCustomer(customer, mode)}
               isMenuOpen={openMenuId === customer.id}
               setMenuOpen={(isOpen: any) => setOpenMenuId(isOpen ? customer.id : null)}
@@ -120,13 +113,7 @@ export function CustomerList({ customers, areas, locale }: CustomerListProps) {
         customer={selectedCustomer}
         areas={areas}
         locale={locale}
-        mode={modalMode as any}
-      />
-
-      <CustomerCalendarModal
-        isOpen={isCalendarOpen}
-        onClose={() => setIsCalendarOpen(false)}
-        customer={selectedCustomer}
+        mode={modalMode}
       />
     </div>
   );

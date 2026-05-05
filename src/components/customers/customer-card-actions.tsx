@@ -8,7 +8,7 @@ type CustomerCardActionsProps = {
   id: string;
   customerCode: string;
   locale: string;
-  onView?: (mode: "view" | "details" | "edit") => void;
+  onView?: (mode: "view" | "details" | "schedule" | "edit") => void;
   isMenuOpen?: boolean;
   setMenuOpen?: (isOpen: boolean) => void;
 };
