@@ -31,7 +31,8 @@ export async function POST(req: Request) {
 
     // Bypass OTP verification in development mode
     const isDevBypass = process.env.NODE_ENV === "development" && otp === "123456";
-
+    console.log("user", user)
+    console.log("isDEvBypass", isDevBypass)
     if (!isDevBypass) {
       // Check if OTP matches and is not expired
       if (user.otp !== otp) {

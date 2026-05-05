@@ -346,7 +346,12 @@ function buildCustomerEntities(base: Awaited<ReturnType<typeof getBaseData>>) {
     const paidAmount = payments.reduce((total, payment) => total + payment.amount, 0);
     const totalAmount = milkAmount + addonAmount;
     const dueAmount = Math.max(totalAmount - paidAmount, 0);
+    const advanceAmount = Math.max(paidAmount - totalAmount, 0);
     const deliveredDays = billableDays;
+
+    const lastPayment = payments.length > 0 
+      ? [...payments].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0]
+      : null;
 
     return {
       profile,
@@ -354,20 +359,33 @@ function buildCustomerEntities(base: Awaited<ReturnType<typeof getBaseData>>) {
       activePlan,
       monthExceptions,
       todayException,
-      payments,
+      payments: payments.map(p => ({
+        id: String(p._id),
+        amount: p.amount,
+        date: p.date,
+        dateLabel: formatDateLabel(p.date),
+        mode: p.mode,
+        note: p.note || "",
+      })),
       totals: {
         milkAmount,
         addonAmount,
         totalAmount,
         paidAmount,
         dueAmount,
+        advanceAmount,
         deliveredDays,
         skippedDays,
         pausedDays,
         totalDays,
         monthlyLiters: billableDays * quantity,
       },
-      lastPaymentDate: payments.length > 0 ? new Date(Math.max(...payments.map(p => new Date(p.date).getTime()))) : null,
+      lastPayment: lastPayment ? {
+        amount: lastPayment.amount,
+        date: lastPayment.date,
+        dateLabel: formatDateLabel(lastPayment.date),
+        mode: lastPayment.mode,
+      } : null,
     };
   });
 }
@@ -423,6 +441,7 @@ export async function getCustomerListData() {
         quantity: entry.activePlan?.quantityLiters || 0,
         rate: entry.activePlan?.pricePerLiter || 0,
         due: entry.totals.dueAmount,
+        advance: entry.totals.advanceAmount,
         billed: entry.totals.totalAmount,
         paid: entry.totals.paidAmount,
         notes: entry.profile.notes || "",
@@ -430,7 +449,8 @@ export async function getCustomerListData() {
         deliverySlot: "Morning",
         deliveryStatus,
         extraQuantity: delivery?.extraQuantity || 0,
-        lastPaymentDate: entry.lastPaymentDate,
+        lastPayment: entry.lastPayment,
+        paymentHistory: entry.payments,
         status:
           entry.profile.isActive === false || entry.user?.status === "INACTIVE"
             ? "INACTIVE"
@@ -653,23 +673,43 @@ export async function getBillingData() {
       dueAmount: customers.reduce((total, customer) => total + customer.due, 0),
     },
     customers,
-    recentPayments: base.paymentsMonth.slice(0, 12).map((payment) => {
-      const customer = customers.find(
-        (entry) => entry.customerCode ===
-          base.profiles.find((profile) => String(profile._id) === String(payment.customerId))
-            ?.customerCode,
-      );
+    recentPayments: (() => {
+      const grouped = new Map<string, any>();
+      
+      for (const payment of base.paymentsMonth) {
+        const customerId = String(payment.customerId);
+        const date = new Date(payment.date);
+        date.setHours(0, 0, 0, 0);
+        const dateKey = date.toISOString();
+        const groupKey = `${customerId}_${dateKey}`;
 
-      return {
-        id: String(payment._id),
-        customerCode: customer?.customerCode || "",
-        customerName: customer?.name || "Unknown",
-        amount: payment.amount,
-        mode: payment.mode,
-        dateLabel: formatDateLabel(payment.date),
-        note: payment.note || "",
-      };
-    }),
+        if (!grouped.has(groupKey)) {
+          const profile = base.profiles.find((p) => String(p._id) === customerId);
+          const customer = customers.find((c) => c.customerCode === profile?.customerCode);
+
+          grouped.set(groupKey, {
+            customerId,
+            customerCode: customer?.customerCode || "",
+            customerName: customer?.name || "Unknown",
+            date,
+            dateLabel: formatDateLabel(payment.date),
+            totalAmount: 0,
+            transactions: [],
+          });
+        }
+
+        const group = grouped.get(groupKey);
+        group.totalAmount += payment.amount;
+        group.transactions.push({
+          id: String(payment._id),
+          amount: payment.amount,
+          mode: payment.mode,
+          note: payment.note || "",
+        });
+      }
+
+      return Array.from(grouped.values()).slice(0, 30);
+    })(),
   };
 }
 
