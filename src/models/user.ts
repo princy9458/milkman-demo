@@ -9,8 +9,9 @@ const userSchema = new Schema(
       default: "CUSTOMER",
     },
     name: {
-      type: String,
-      trim: true,
+      en: { type: String, trim: true },
+      hi: { type: String, trim: true },
+      pa: { type: String, trim: true },
     },
     phone: {
       type: String,
@@ -23,18 +24,9 @@ const userSchema = new Schema(
       trim: true,
       lowercase: true,
     },
-    passwordHash: {
-      type: String,
-    },
-    otp: {
-      type: String,
-    },
-    otpExpiry: {
-      type: Date,
-    },
     preferredLanguage: {
       type: String,
-      enum: ["en", "hi"],
+      enum: ["en", "hi", "pa"],
       default: "en",
     },
     status: {

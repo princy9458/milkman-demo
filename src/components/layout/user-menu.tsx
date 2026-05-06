@@ -1,55 +1,30 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { LogOut, User, LogIn } from "lucide-react";
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import { LogOut, User, Loader2, LogIn } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export function UserMenu({ locale }: { locale: string }) {
-  const [user, setUser] = useState<any>(null);
-  const router = useRouter();
+  const t = useTranslations("nav");
+  const pathname = usePathname();
 
-  useEffect(() => {
-    const checkUser = () => {
-      const userStr = localStorage.getItem("user");
-      if (userStr) {
-        setUser(JSON.parse(userStr));
-      } else {
-        setUser(null);
-      }
-    };
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
-    checkUser();
+  // Robust landing page check: /en, /hi, /pa, /en/, / or empty
+  const isLandingPage = pathname === `/${locale}` || pathname === `/${locale}/` || pathname === "/" || pathname === "";
 
-    // Listen for storage changes (e.g. from LoginForm clearing the session)
-    window.addEventListener("storage", checkUser);
-    return () => window.removeEventListener("storage", checkUser);
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setUser(null);
-    router.push(`/${locale}/login`);
-  };
-
-  if (!user) {
+  if (!mounted || isLandingPage) {
     return null;
   }
 
   return (
-    <div className="flex items-center gap-4">
-      <div className="hidden sm:flex items-center gap-2 text-sm text-gray-600 font-medium">
-        <User size={16} />
-        <span>{user.phone}</span>
+    <div className="flex items-center gap-3">
+      <div className="flex items-center justify-center h-9 w-9 text-slate-900 bg-slate-100/80 rounded-full border border-slate-200/50">
+        <User size={18} className="text-blue-600" />
       </div>
-      <button
-        onClick={handleLogout}
-        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-full hover:bg-gray-200 transition-all border border-gray-200"
-      >
-        <LogOut size={16} />
-        <span className="hidden xs:inline">Sign Out</span>
-      </button>
     </div>
   );
 }
