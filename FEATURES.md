@@ -2,12 +2,25 @@
 
 Milkman is a lightweight, mobile-friendly milk delivery management application designed for Indian milk sellers. It provides a bilingual interface (English, Hindi, and Punjabi) and a robust set of tools for both administrators and customers.
 
+## User Roles
+
+The application defines two primary user roles, each with specific permissions and access levels:
+
+### 1. ADMIN
+The Super Admin role has full control over the application's data and operations.
+- **Permissions**: CRUD operations on all entities, access to financial reports, and management of vendors and products.
+- **Key Focus**: Operational efficiency, billing accuracy, and route management.
+
+### 2. CUSTOMER
+The Customer role has limited access to their own delivery and billing data.
+- **Permissions**: View personal dashboard, consumption calendar, delivery history, and billing status.
+- **Key Focus**: Transparency of usage, tracking dues, and profile management.
+
 ## General Features
 
 - **Bilingual Support**: Fully localized UI in English, Hindi, and Punjabi.
-- **Mobile-First Design**: Optimized for mobile-first admin usage with a clean, utility-focused interface.
+- **Mobile-First Design**: Optimized for mobile-first usage with a clean, utility-focused interface.
 - **Secure Authentication**: Secure session-based authentication using mobile numbers.
-- **Role-Based Access**: Dedicated dashboards and functionalities for Super Admins and Customers.
 - **Indian Context Optimization**: INR currency formatting and Indian date/number conventions throughout the app.
 
 ## Admin Features
@@ -65,3 +78,32 @@ Milkman is a lightweight, mobile-friendly milk delivery management application d
 ### Profile Management
 - **Contact Details**: View name, phone number, and preferred language.
 - **Delivery Information**: Review exact delivery address and assigned area.
+
+## Application Architecture & API Paths
+
+The application follows a structured routing system for both pages and API endpoints.
+
+### Frontend Route Groups
+- `/(auth)`: Authentication routes (Login, Role Selection).
+- `/(admin)/admin`: Administrative control panel routes.
+- `/(customer)/customer`: Customer self-service portal routes.
+
+### API Endpoints
+The backend provides the following RESTful API paths:
+
+| Module | Endpoint | Description |
+| --- | --- | --- |
+| **Auth** | `/api/auth/me` | Current session/user info |
+| **Customers** | `/api/customers` | Customer list and creation |
+| | `/api/customers/[code]` | Individual customer details |
+| | `/api/customers/[code]/calendar` | Customer-specific delivery calendar |
+| | `/api/customers/[code]/quantity` | Milk plan quantity management |
+| **Deliveries** | `/api/deliveries` | Daily delivery records |
+| | `/api/deliveries/[id]/status` | Update specific delivery status |
+| **Milk Entries** | `/api/milk-entries` | Detailed consumption logs |
+| **Payments** | `/api/payments` | Recording and tracking payments |
+| **Products** | `/api/products` | Managing dairy product catalog |
+| **Purchases** | `/api/purchases` | Vendor inward milk purchases |
+| **Vendors** | `/api/vendors` | Managing milk suppliers |
+| **Areas** | `/api/areas` | Managing delivery zones/routes |
+| **Health** | `/api/health` | System status check |
