@@ -6,5 +6,5 @@ type LoginPageProps = {
 
 export default async function LoginPage({ params }: LoginPageProps) {
   const { locale } = await params;
-  redirect(`/${locale}/admin/dashboard`);
+  redirect(`/login?locale=${locale}`);
 }

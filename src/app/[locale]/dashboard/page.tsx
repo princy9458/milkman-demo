@@ -8,15 +8,13 @@ export default function DashboardRedirect() {
   const router = useRouter();
 
   useEffect(() => {
-    const userStr = localStorage.getItem("user");
-    const user = userStr ? JSON.parse(userStr) : null;
+    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+    const locale = window.location.pathname.split("/")[1] || "en";
 
-    if (user?.role === "ADMIN") {
-      router.push("/admin/dashboard");
-    } else if (user) {
-      router.push("/customer/dashboard");
+    if (isLoggedIn) {
+      router.replace(`/${locale}/admin/dashboard`);
     } else {
-      router.push("/login");
+      router.replace("/login?locale=" + encodeURIComponent(locale));
     }
   }, [router]);
 

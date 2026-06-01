@@ -27,7 +27,13 @@ type GroupedPayment = {
 
 type RecentEntriesProps = {
   payments: GroupedPayment[];
-  customers: any[]; // Full customer data for billing summary
+  customers: Array<{
+    customerCode: string;
+    billed: number;
+    paid: number;
+    due: number;
+    advance: number;
+  }>;
   viewAllLabel: string;
 };
 
@@ -41,8 +47,13 @@ export function RecentEntries({ payments, customers, viewAllLabel }: RecentEntri
   const [modeFilter, setModeFilter] = useState("all");
   const [timeFilter, setTimeFilter] = useState("all");
 
-  const todayStr = new Date().toDateString();
-  const yesterdayStr = new Date(Date.now() - 86400000).toDateString();
+  const getDayString = (offsetDays: number) => {
+    const date = new Date();
+    date.setDate(date.getDate() - offsetDays);
+    return date.toDateString();
+  };
+  const todayStr = getDayString(0);
+  const yesterdayStr = getDayString(1);
 
   const initialLimit = 4;
   const hasMore = payments.length > initialLimit;
@@ -263,7 +274,7 @@ export function RecentEntries({ payments, customers, viewAllLabel }: RecentEntri
                         <div className="mt-1 flex items-start gap-2 rounded-xl bg-white/50 p-2.5 border border-slate-50 sm:p-3">
                           <Info className="h-3.5 w-3.5 mt-0.5 text-[var(--admin-muted)]" />
                           <p className="text-[10px] font-medium text-[var(--admin-muted)] leading-relaxed italic sm:text-[11px]">
-                            "{tx.note}"
+                            &ldquo;{tx.note}&rdquo;
                           </p>
                         </div>
                       )}

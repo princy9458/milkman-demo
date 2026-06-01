@@ -78,6 +78,8 @@ type PlainDelivery = {
   note?: string;
 };
 
+type PlainDeliveryRecord = PlainDelivery;
+
 type DeliveryAddOnItem = {
   productCode?: string;
   productName?: string;
@@ -281,7 +283,7 @@ const getBaseData = cache(async () => {
       MilkPlan.find({ isActive: true }).sort({ startDate: -1 }).lean<PlainMilkPlan[]>(),
       DeliveryException.find({ date: { $gte: monthStart, $lte: monthEnd } }).sort({ date: -1 }).lean<PlainDeliveryException[]>(),
       DeliveryException.find({ date: { $gte: todayStart, $lte: todayEnd } }).lean<PlainDeliveryException[]>(),
-      Delivery.find({ date: { $gte: todayStart, $lte: todayEnd } }).lean<any[]>(),
+      Delivery.find({ date: { $gte: todayStart, $lte: todayEnd } }).lean<PlainDeliveryRecord[]>(),
       Payment.find({ date: { $gte: monthStart, $lte: monthEnd } }).sort({ date: -1 }).lean<PlainPayment[]>(),
       Product.find().sort({ sortOrder: 1, name: 1 }).lean<PlainProduct[]>(),
       Vendor.find().sort({ sortOrder: 1, name: 1 }).lean<PlainVendor[]>(),
@@ -674,7 +676,23 @@ export async function getBillingData() {
     },
     customers,
     recentPayments: (() => {
-      const grouped = new Map<string, any>();
+      type RecentPaymentGroup = {
+        customerId: string;
+        customerCode: string;
+        customerName: string;
+        date: Date;
+        dateLabel: string;
+        totalAmount: number;
+        transactions: Array<{
+          id: string;
+          amount: number;
+          mode: string;
+          date: Date | string;
+          note: string;
+        }>;
+      };
+
+      const grouped = new Map<string, RecentPaymentGroup>();
       
       for (const payment of base.paymentsMonth) {
         const customerId = String(payment.customerId);
@@ -707,6 +725,9 @@ export async function getBillingData() {
         }
 
         const group = grouped.get(groupKey);
+        if (!group) {
+          continue;
+        }
         group.totalAmount += payment.amount;
         group.transactions.push({
           id: String(payment._id),

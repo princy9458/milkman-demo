@@ -139,7 +139,7 @@ export function DeliveryOperationsPanel({
         code: string;
         name: string | { en: string; hi: string; pa: string };
         isActive?: boolean;
-      }> = data.areas || (areas as any);
+      }> = data.areas || areas;
       const activeAreas = areaPayload
         .filter((area) => area.isActive !== false)
         .map((area) => ({ code: area.code, name: area.name }));
@@ -188,17 +188,16 @@ export function DeliveryOperationsPanel({
     setLoadingKey(`${customerCode}:${type}`);
 
     // Optimistic update
-    setLocalEntries((prev) =>
-      prev.map((entry) => {
-        if (entry.customerCode !== customerCode) return entry;
+      setLocalEntries((prev) =>
+        prev.map((entry) => {
+          if (entry.customerCode !== customerCode) return entry;
 
-        if (type === "RESET") {
-          return { ...entry, status: "PENDING" as const, actualQuantity: entry.defaultQuantity, extraQuantity: 0 };
-        }
-
-        const statusToSet = isTogglingOff ? "PENDING" : (type === "EXTRA" ? "DELIVERED" : type);
-        return { ...entry, status: statusToSet as any };
-      })
+          if (type === "RESET") {
+            return { ...entry, status: "PENDING" as const, actualQuantity: entry.defaultQuantity, extraQuantity: 0 };
+          }
+          const statusToSet = type === "EXTRA" ? "DELIVERED" : type;
+          return { ...entry, status: statusToSet as "DELIVERED" | "SKIPPED" | "PAUSED" | "PENDING" };
+        })
     );
 
     try {
@@ -208,7 +207,12 @@ export function DeliveryOperationsPanel({
         });
       } else {
         const currentEntry = localEntries.find(e => e.customerCode === customerCode);
-        const body: any = {
+        const body: {
+          customerCode: string;
+          status: typeof finalType;
+          date: string;
+          actualQuantity: number;
+        } = {
           customerCode,
           status: finalType,
           date: filters.date,
@@ -539,7 +543,7 @@ export function DeliveryOperationsPanel({
                   {task.deliveryInstruction && (
                     <div className="hidden xl:block max-w-[130px] mr-auto">
                       <p className="text-[10px] font-bold text-[#064e3b] italic leading-tight bg-[#ecfdf5] px-2 py-1.5 rounded-lg truncate">
-                        "{task.deliveryInstruction}"
+                        &ldquo;{task.deliveryInstruction}&rdquo;
                       </p>
                     </div>
                   )}
@@ -623,7 +627,7 @@ export function DeliveryOperationsPanel({
               {task.deliveryInstruction && (
                 <div className="xl:hidden mt-3 pt-3 border-t border-gray-50">
                   <p className="text-[10px] font-bold text-[#064e3b] italic leading-tight bg-[#ecfdf5] px-2 py-1.5 rounded-lg inline-block">
-                    "{task.deliveryInstruction}"
+                    &ldquo;{task.deliveryInstruction}&rdquo;
                   </p>
                 </div>
               )}

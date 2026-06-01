@@ -9,6 +9,49 @@ import { RecentEntries } from "@/components/billing/recent-entries";
 import { cn, formatCurrencyINR } from "@/lib/utils";
 import { BadgeIndianRupee, CircleDollarSign, WalletCards } from "lucide-react";
 
+type BillingCustomerAccount = {
+  id: string;
+  customerCode: string;
+  name: string;
+  phone: string;
+  areaCode: string;
+  areaName: string;
+  billed: number;
+  paid: number;
+  due: number;
+  advance: number;
+  lastPayment: {
+    amount: number;
+    date: string | Date;
+    dateLabel: string;
+    mode: string;
+  } | null;
+  paymentHistory: Array<{
+    id: string;
+    amount: number;
+    date: string | Date;
+    dateLabel: string;
+    mode: string;
+    note: string;
+  }>;
+};
+
+type RecentPaymentGroup = {
+  customerId: string;
+  customerCode: string;
+  customerName: string;
+  date: Date;
+  dateLabel: string;
+  totalAmount: number;
+  transactions: Array<{
+    id: string;
+    amount: number;
+    mode: string;
+    date: string | Date;
+    note: string;
+  }>;
+};
+
 type BillingDashboardProps = {
   locale: string;
   translations: {
@@ -35,8 +78,8 @@ type BillingDashboardProps = {
       paidAmount: number;
       dueAmount: number;
     };
-    customers: any[];
-    recentPayments: any[];
+    customers: BillingCustomerAccount[];
+    recentPayments: RecentPaymentGroup[];
   };
 };
 

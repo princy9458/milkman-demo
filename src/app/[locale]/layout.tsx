@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
+import { AuthGuard } from "@/components/auth/auth-guard";
 import { PlatformHeader } from "@/components/layout/platform-header";
 import { locales, type AppLocale } from "@/i18n/routing";
 
@@ -27,7 +28,7 @@ export default async function LocaleLayout({
     <NextIntlClientProvider locale={locale} messages={messages}>
       <div className="app-shell" lang={locale}>
         <PlatformHeader locale={locale as AppLocale} />
-        {children}
+        <AuthGuard locale={locale}>{children}</AuthGuard>
       </div>
     </NextIntlClientProvider>
   );

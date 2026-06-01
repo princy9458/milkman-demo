@@ -1,4 +1,4 @@
-export async function signToken(payload: any) {
+export async function signToken(payload: Record<string, unknown>) {
   return "demo-token";
 }
 
