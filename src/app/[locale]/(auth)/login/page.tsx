@@ -1,10 +1,15 @@
-import { redirect } from "next/navigation";
+import { Suspense } from "react";
+import { LoginPage } from "@/components/auth/login-page";
 
 type LoginPageProps = {
   params: Promise<{ locale: string }>;
 };
 
-export default async function LoginPage({ params }: LoginPageProps) {
+export default async function LocaleLoginPage({ params }: LoginPageProps) {
   const { locale } = await params;
-  redirect(`/login?locale=${locale}`);
+  return (
+    <Suspense fallback={null}>
+      <LoginPage locale={locale} />
+    </Suspense>
+  );
 }

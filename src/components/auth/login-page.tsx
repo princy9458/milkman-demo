@@ -23,28 +23,60 @@ export function LoginPage({ locale: localeProp = "en" }: LoginPageProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-
-    if (isLoggedIn) {
-      router.replace(`/${locale}/admin/dashboard`);
+    let isMounted = true;
+    async function checkCurrentSession() {
+      try {
+        const response = await fetch("/api/auth/me");
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && isMounted) {
+            const targetDashboard = data.user.role === "CUSTOMER"
+              ? `/${locale}/customer/dashboard`
+              : `/${locale}/admin/dashboard`;
+            router.replace(targetDashboard);
+          }
+        }
+      } catch (err) {
+        // Not authenticated or error, ignore
+      }
     }
+    checkCurrentSession();
+    return () => {
+      isMounted = false;
+    };
   }, [locale, router]);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
     setIsSubmitting(true);
 
-    const isValid = username.trim() === VALID_USERNAME && password === VALID_PASSWORD;
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
 
-    if (!isValid) {
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        setIsSubmitting(false);
+        setError(data.error || "Invalid username or password.");
+        return;
+      }
+
+      const targetDashboard = data.user.role === "CUSTOMER"
+        ? `/${locale}/customer/dashboard`
+        : `/${locale}/admin/dashboard`;
+      router.replace(targetDashboard);
+    } catch (err) {
+      console.error("Login error:", err);
       setIsSubmitting(false);
-      setError("Invalid username or password.");
-      return;
+      setError("An error occurred during login. Please try again.");
     }
-
-    localStorage.setItem("isLoggedIn", "true");
-    router.replace(`/${locale}/admin/dashboard`);
   };
 
   return (
