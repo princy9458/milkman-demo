@@ -19,9 +19,6 @@ import {
   Store,
   Users,
   X,
-  LogOut,
-  Search,
-  ArrowLeft,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
@@ -63,7 +60,7 @@ const navItems: NavItem[] = [
   { href: "calendar", icon: CalendarDays },
   { href: "billing", icon: CreditCard },
   { href: "reports", icon: ChartColumn },
-  { href: "reports/area-insights" as any, icon: NotebookText, labelKey: "areaInsights" },
+  { href: "reports/area-insights", icon: NotebookText, labelKey: "areaInsights" },
   { href: "purchases", icon: ShoppingCart },
   { href: "areas", icon: Building2 },
   { href: "products", icon: Package2 },
@@ -107,8 +104,8 @@ export function AdminShell({
 
   return (
     <div className="admin-theme">
-      <div className="mx-auto flex min-h-screen max-w-[1440px] gap-4 px-3 py-3 sm:px-4 lg:px-5">
-        <aside className="admin-panel sticky top-[76px] hidden h-[calc(100vh-1.5rem-64px)] w-[296px] shrink-0 rounded-[32px] p-5 lg:flex lg:flex-col overflow-y-auto">
+      <div className="mx-auto flex min-h-[calc(100vh-64px)] lg:h-[calc(100vh-64px)] max-w-[1440px] gap-4 px-3 pt-2 pb-3 sm:px-4 lg:px-5">
+        <aside className="admin-panel sticky top-[72px] hidden h-[calc(100vh-1.25rem-64px)] w-[296px] shrink-0 rounded-[32px] p-5 lg:flex lg:flex-col overflow-y-auto">
           <div className="flex items-center gap-3 px-1">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--admin-primary-soft)] text-[var(--admin-primary-strong)]">
               <Droplets className="h-5 w-5" />
@@ -131,6 +128,80 @@ export function AdminShell({
             </div>
           </div>
         </aside>
+
+        {/* MAIN CONTENT AREA */}
+        <div className="flex min-w-0 flex-1 flex-col lg:h-full lg:overflow-hidden">
+          <div className="min-w-0 flex-1">
+            <header className="sticky top-16 z-30 mb-3 sm:top-[72px] sm:mb-3">
+              <div className="admin-panel rounded-[30px] px-4 py-3 shadow-lg shadow-blue-900/5 sm:px-5 sm:shadow-none">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setIsDrawerOpen(true)}
+                      className="admin-icon-button h-11 w-11 lg:hidden"
+                      aria-label={tShell("openMenu")}
+                    >
+                      <Menu className="h-5 w-5" />
+                    </button>
+                    <div className="min-w-0">
+                      <p className="truncate text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--admin-muted)] sm:text-[13px]">
+                        {tShell("workspaceEyebrow")}
+                      </p>
+                      <p className="truncate text-base font-bold text-[var(--admin-text)] sm:text-xl">
+                        {title}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      className="admin-icon-button h-11 w-11"
+                      aria-label={tShell("notifications")}
+                    >
+                      <Bell className="h-5 w-5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </header>
+
+            <main className="flex-1 overflow-y-auto px-4 pb-10 sm:px-8">
+              <div className="mx-auto max-w-[1200px]">
+                {children}
+              </div>
+            </main>
+
+            {/* Sticky Bottom Nav (Mobile Only) */}
+            <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-t border-slate-200 flex items-center justify-around h-16 px-2 lg:hidden">
+              {[
+                { href: "dashboard", icon: Home },
+                { href: "deliveries", icon: Droplets },
+                { href: "customers", icon: Users },
+                { href: "billing", icon: CreditCard },
+              ].map(({ href, icon: Icon }) => {
+                const target = `/${locale}/admin/${href}`;
+                const isActive = pathname === target || pathname.startsWith(`${target}/`);
+                return (
+                  <Link
+                    key={href}
+                    href={target}
+                    className={cn(
+                      "flex flex-col items-center justify-center gap-1 transition-all active:scale-90",
+                      isActive ? "text-blue-600" : "text-slate-400"
+                    )}
+                  >
+                    <Icon className={cn("h-6 w-6", isActive && "stroke-[2.5px]")} />
+                    <span className={cn("text-[10px] font-bold", isActive ? "text-blue-600" : "text-slate-400")}>
+                      {tNav(href)}
+                    </span>
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+        </div>
       </div>
 
       {/* MOBILE DRAWER */}
@@ -142,108 +213,6 @@ export function AdminShell({
         </div>
         <nav className="space-y-1">{navItems.map(renderNavItem)}</nav>
       </aside>
-
-      {/* MAIN CONTENT AREA */}
-      <div className="flex min-w-0 flex-1 flex-col lg:h-full lg:overflow-hidden">
-        <header className="sticky top-0 z-30 flex h-20 items-center px-4 pointer-events-none sm:h-24 sm:px-8">
-          <div className="w-full bg-white rounded-[24px] border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] h-16 sm:h-20 flex items-center justify-between px-6 pointer-events-auto">
-            <div className="flex items-center gap-4">
-              <button onClick={() => setIsDrawerOpen(true)} className="lg:hidden p-2 text-gray-400 hover:bg-gray-50 rounded-xl transition-colors"><Menu size={20} /></button>
-              <div className="flex flex-col">
-                <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] leading-none mb-1">Workspace</span>
-                <h2 className="text-lg font-bold text-gray-900 tracking-tight leading-none">{title}</h2>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-900 transition-all">
-                <Bell size={18} />
-              </button>
-            </div>
-
-            <div className="admin-panel-muted mt-6 rounded-[24px] p-4">
-              <p className="text-xs font-bold text-[var(--admin-muted)] uppercase tracking-wider">
-                {tShell("activeRoute")}
-              </p>
-              <p className="mt-1 text-base font-bold text-[var(--admin-text)]">
-                {tShell("customersThisCycle", { count: 128 })}
-              </p>
-            </div>
-
-            <nav className="mt-6 space-y-2">{navItems.map(renderNavItem)}</nav>
-          </div>
-        </aside>
-
-        <div className="min-w-0 flex-1">
-          <header className="sticky top-16 z-30 mb-8 sm:top-[76px] sm:mb-6">
-            <div className="admin-panel rounded-[30px] px-4 py-3 shadow-lg shadow-blue-900/5 sm:px-5 sm:shadow-none">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex min-w-0 items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setIsDrawerOpen(true)}
-                    className="admin-icon-button h-11 w-11 lg:hidden"
-                    aria-label={tShell("openMenu")}
-                  >
-                    <Menu className="h-5 w-5" />
-                  </button>
-                  <div className="min-w-0">
-                    <p className="truncate text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--admin-muted)] sm:text-[13px]">
-                      {tShell("workspaceEyebrow")}
-                    </p>
-                    <p className="truncate text-base font-bold text-[var(--admin-text)] sm:text-xl">
-                      {title}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    className="admin-icon-button h-11 w-11"
-                    aria-label={tShell("notifications")}
-                  >
-                    <Bell className="h-5 w-5" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </header>
-
-        <main className="flex-1 overflow-y-auto px-4 pb-10 sm:px-8">
-          <div className="mx-auto max-w-[1200px]">
-            {children}
-          </main>
-
-          {/* Sticky Bottom Nav (Mobile Only) */}
-          <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-t border-slate-200 flex items-center justify-around h-16 px-2 lg:hidden">
-            {[
-              { href: "dashboard", icon: Home },
-              { href: "deliveries", icon: Droplets },
-              { href: "customers", icon: Users },
-              { href: "billing", icon: CreditCard },
-            ].map(({ href, icon: Icon }) => {
-              const target = `/${locale}/admin/${href}`;
-              const isActive = pathname === target || pathname.startsWith(`${target}/`);
-              return (
-                <Link
-                  key={href}
-                  href={target}
-                  className={cn(
-                    "flex flex-col items-center justify-center gap-1 transition-all active:scale-90",
-                    isActive ? "text-blue-600" : "text-slate-400"
-                  )}
-                >
-                  <Icon className={cn("h-6 w-6", isActive && "stroke-[2.5px]")} />
-                  <span className={cn("text-[10px] font-bold", isActive ? "text-blue-600" : "text-slate-400")}>
-                    {tNav(href)}
-                  </span>
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-      </div>
     </div>
   );
 }

@@ -1,8 +1,8 @@
 "use client";
 
 import { LogOut } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useSyncExternalStore } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 type LogoutButtonProps = {
   locale: string;
@@ -10,19 +10,46 @@ type LogoutButtonProps = {
 
 export function LogoutButton({ locale }: LogoutButtonProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const isLoggedIn = useSyncExternalStore(
-    (onStoreChange) => {
-      window.addEventListener("storage", onStoreChange);
-      return () => window.removeEventListener("storage", onStoreChange);
-    },
-    () => (typeof window === "undefined" ? false : localStorage.getItem("isLoggedIn") === "true"),
-    () => false,
-  );
+  useEffect(() => {
+    let isMounted = true;
+    async function checkAuth() {
+      try {
+        const response = await fetch("/api/auth/me");
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && isMounted) {
+            setIsLoggedIn(true);
+            return;
+          }
+        }
+        if (isMounted) {
+          setIsLoggedIn(false);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setIsLoggedIn(false);
+        }
+      }
+    }
+    checkAuth();
+    return () => {
+      isMounted = false;
+    };
+  }, [pathname, locale]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
-    router.replace(`/login?locale=${encodeURIComponent(locale)}`);
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/api/auth/logout", { method: "POST" });
+      if (response.ok) {
+        setIsLoggedIn(false);
+        router.replace(`/${locale}/login`);
+      }
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
   };
 
   if (!isLoggedIn) {

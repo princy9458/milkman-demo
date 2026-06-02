@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 
@@ -19,26 +19,54 @@ export function AuthGuard({ locale, children }: AuthGuardProps) {
     pathname.startsWith(`/${locale}/admin`) ||
     pathname.startsWith(`/${locale}/customer`);
 
-  const isLoggedIn = useSyncExternalStore(
-    (onStoreChange) => {
-      window.addEventListener("storage", onStoreChange);
-      return () => window.removeEventListener("storage", onStoreChange);
-    },
-    () => (typeof window === "undefined" ? false : localStorage.getItem("isLoggedIn") === "true"),
-    () => false,
-  );
+  // Initialize state based on whether the route is protected or not
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(() => {
+    return isProtectedRoute ? null : true;
+  });
 
   useEffect(() => {
-    if (isProtectedRoute && !isLoggedIn) {
-      router.replace(`/login?locale=${encodeURIComponent(locale)}`);
+    if (!isProtectedRoute) {
+      return;
     }
-  }, [isLoggedIn, isProtectedRoute, locale, router]);
+
+    let isMounted = true;
+
+    async function checkAuth() {
+      try {
+        const response = await fetch("/api/auth/me");
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && isMounted) {
+            setIsAuthenticated(true);
+            return;
+          }
+        }
+        
+        if (isMounted) {
+          setIsAuthenticated(false);
+          router.replace(`/login?locale=${encodeURIComponent(locale)}`);
+        }
+      } catch (err) {
+        console.error("Auth check failed:", err);
+        if (isMounted) {
+          setIsAuthenticated(false);
+          router.replace(`/login?locale=${encodeURIComponent(locale)}`);
+        }
+      }
+    }
+
+    checkAuth();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isProtectedRoute, locale, router, pathname]);
 
   if (!isProtectedRoute) {
     return children;
   }
 
-  if (!isLoggedIn) {
+  if (isAuthenticated === null || isAuthenticated === false) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <Loader2 className="h-10 w-10 animate-spin text-slate-500" />
